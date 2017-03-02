@@ -46,9 +46,9 @@ function ws_handshake($ws_resource) {
 function getWebsocket() {
 
 	$socket = NULL;
-	$addr = '0.0.0.0';$port = 0;
-	$addr = '127.0.0.1';$port = 889;
-	//$addr = 'art.cn.bender.inetra.ru';$port = 10001;
+	//$addr = '0.0.0.0';$port = 0;
+	//$addr = '127.0.0.1';$port = 889;
+	$addr = 'cherio.io';$port = 889;
 
 	trace("socket_create > ");
 	$rs = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
