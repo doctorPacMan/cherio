@@ -1,14 +1,45 @@
 <?php
 namespace WebSocket\Application;
-
-/**
- * Shiny WSS Status Application
- * Provides live server infos/messages to client/browser.
- * 
- * @author Simon Samtleben <web@lemmingzshadow.net>
- */
 class EchoApplication extends Application
 {
+    private $_clients = array();
+	public function onConnect($client)
+    {
+		$cid = $client->getClientId();
+		$sok = $client->getClientSocket();
+        $this->_clients[$cid] = $client;
+        
+        $data = "Client join count:".count($this->_clients)." #".$cid."";
+		$client->log($data);
+
+		//$encodedData = $this->_encodeData('join', $cid);
+		//$client->send($encodedData);
+
+		$encodedData = $this->_encodeData('info', $data);
+		$this->sendAll($encodedData);
+    }
+    public function onDisconnect($client)
+    {
+        $cid = $client->getClientId();		
+		unset($this->_clients[$cid]);     
+
+        $data = "Client drop count:".count($this->_clients)." #".$cid."";
+		$client->log($data);
+		
+		$encodedData = $this->_encodeData('info', $data);
+		$this->sendAll($encodedData);
+    }
+    public function onData($data, $client)
+    {		
+		$encodedData = $this->_encodeData('data', $data);
+		$client->send($encodedData);
+    }
+	private function sendAll($encodedData)
+	{		
+		foreach($this->_clients as $client) $client->send($encodedData);
+	}
+
+/*
     private $_clients = array();
 	private $_serverClients = array();
 	private $_serverInfo = array();
@@ -28,11 +59,6 @@ class EchoApplication extends Application
 		unset($this->_clients[$id]);     
     }
 
-    public function onData($data, $client)
-    {		
-        $this->statusMsg('Application onData');
-    }
-	
 	public function setServerInfo($serverInfo)
 	{
 		if(is_array($serverInfo))
@@ -115,4 +141,5 @@ class EchoApplication extends Application
             $sendto->send($encodedData);
         }
 	}
+*/
 }

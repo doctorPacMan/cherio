@@ -2,11 +2,11 @@
 ini_set('display_errors',1);
 error_reporting(E_ALL);
 ob_implicit_flush(true);
-set_time_limit(120);
+set_time_limit(30*60);
 
-$lib_phpws = __DIR__.'/lib/php-websocket/';
-require_once($lib_phpws.'server/lib/SplClassLoader.php');
-$classLoader = new SplClassLoader('WebSocket',$lib_phpws.'server/lib');
+define('LIB_PHP_WEBSOCKET',__DIR__.'/lib/php-websocket/');
+require_once(LIB_PHP_WEBSOCKET.'server/lib/SplClassLoader.php');
+$classLoader = new SplClassLoader('WebSocket',LIB_PHP_WEBSOCKET.'server/lib');
 $classLoader->register();
 
 $websocket_host = 'cherio.io';
