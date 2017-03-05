@@ -11,6 +11,7 @@ class Connection
 {
     private $server;
     private $socket;
+	private $cookies;
     private $handshaked = false;
     private $application = null;	
 	
@@ -73,7 +74,15 @@ class Connection
                 $headers[$matches[1]] = $matches[2];
             }
         }
+
+		// get Cookies
+		if(isset($headers['Cookie']))
+		{
+			
+			$this->cookies = $headers['Cookie'];
 		
+		}
+
 		// check for supported websocket version:		
 		if(!isset($headers['Sec-WebSocket-Version']) || $headers['Sec-WebSocket-Version'] < 6)
 		{
@@ -544,6 +553,17 @@ class Connection
 	public function getClientSocket()
 	{
 		return $this->socket;
+	}
+	
+	public function getClientCookies()
+	{
+		$header = explode('; ',$this->cookies);
+    	$cookies = array();
+		foreach($header as $itm) {
+        	list($key, $val) = explode('=', $itm, 2);
+        	$cookies[$key] = $val;
+    	}
+		return $cookies;
 	}
 	
 	public function getClientApplication()

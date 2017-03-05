@@ -15,8 +15,8 @@ class EchoApplication extends Application
 		//$encodedData = $this->_encodeData('join', $cid);
 		//$client->send($encodedData);
 
-		$encodedData = $this->_encodeData('info', $data);
-		$this->sendAll($encodedData);
+		$msdata = $this->messageData('info',$data);
+		$this->sendAll($msdata);
     }
     public function onDisconnect($client)
     {
@@ -26,19 +26,44 @@ class EchoApplication extends Application
         $data = "Client drop count:".count($this->_clients)." #".$cid."";
 		$client->log($data);
 		
-		$encodedData = $this->_encodeData('info', $data);
-		$this->sendAll($encodedData);
+		$msdata = $this->messageData('info',$data);
+		$this->sendAll($msdata);
     }
     public function onData($data, $client)
     {		
-		$encodedData = $this->_encodeData('data', $data);
-		$client->send($encodedData);
+		if($data==='auth') $this->action_Auth($data, $client);
+		else $this->action_Echo($data, $client);
     }
 	private function sendAll($encodedData)
 	{		
 		foreach($this->_clients as $client) $client->send($encodedData);
 	}
-
+	private function messageData($action='info', $data='{}')
+	{		
+		if(is_string($data)) $data = '"'.$data.'"';
+		$ed = $this->_encodeData($action, $data);
+		return $ed;
+	}
+	private function action_Echo($data, $client)
+	{		
+		//$msdata = $this->messageData('echo',['message'=>$data]);
+		$msdata = $this->messageData('echo',$data);
+		$client->send($msdata);
+	}
+	private function action_Auth($data, $client)
+	{		
+		
+		$kukis = $client->getClientCookies();
+		$token = empty($kukis['token']) ? NULL : $kukis['token'];
+		
+		$response = [
+			'cid' => $client->getClientId(),
+			'token' => $token,
+			'success' => FALSE
+		];
+		$msdata = $this->messageData('auth',$response);
+		$client->send($msdata);
+	}
 /*
     private $_clients = array();
 	private $_serverClients = array();

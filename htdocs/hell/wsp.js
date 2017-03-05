@@ -29,12 +29,17 @@ WSPanel.prototype = {
 		var bttn = node.querySelectorAll('button');
 		this._bttn_connect = bttn[0];
 		this._bttn_connect.onclick = this.connectToggle.bind(this);
-		this._bttn_message = bttn[1];
+		this._bttn_mgsauth = bttn[1];
+		this._bttn_mgsauth.onclick = this.message.bind(this,'auth');
+		this._bttn_message = bttn[2];
 		this._bttn_message.onclick = this.message.bind(this,'Превед вебсокет!');
 		
 		//this._ws_addr = 'ws://'+window.location.host+':889/echo';
-		this._ws_addr = 'ws://echo.websocket.org';
-		
+		this._ws_addr = 'ws://login:psswd@'+window.location.host+':889/echo';
+		//this._ws_addr = 'ws://echo.websocket.org';
+		this._ws_username = null;
+		this._ws_userpass = null;
+
 		this.trace('initialize',this._ws_addr);
 		this._readystatechange();
 		//this.connect();
@@ -58,27 +63,28 @@ WSPanel.prototype = {
 		this._bttn_connect.childNodes[0].nodeValue = this._bttn_connect.value;
 		this._bttn_connect[st==='CONNECTING'?'setAttribute':'removeAttribute']('disabled','disabled');
 		this._bttn_message[st!=='OPEN'?'setAttribute':'removeAttribute']('disabled','disabled');
+		this._bttn_mgsauth[st!=='OPEN'?'setAttribute':'removeAttribute']('disabled','disabled');
 		
 		//this.text(st);
 		//console.log('onReadyStateChange', this._state);
 	},
 	onSocketOpen: function() {
 		console.log('onSocketOpen');
-		this.message('auth');
+		//this.message('auth');
 	},
 	onSocketMessage: function(event){
 		console.log('onSocketMessage', event.data);
 		
-		var msg = event.data || '',
-			bts = stringByteLength(msg);
-
+		var res_message = event.data || '',
+			bts = stringByteLength(res_message);
 		this.text('received '+bts+'bytes message');
 		
-		var json = {};
-		try{json = JSON.parse(msg)}catch(e){console.error('JSON.parse error:\r\n'+msg+'')};
-		
-		var action = json.action,
-			msdata = json.data;
+		var msjson = {}, action = 'none', msdata = {};
+		try{msjson = JSON.parse(res_message)}catch(e){console.error('JSON.parse 0 error:\r\n'+res_message+'')};
+		//try{msdata = JSON.parse(msjson.data)}catch(e){console.error('JSON.parse 1 error:\r\n'+msjson.data+'')};
+		msdata = msjson.data;
+		if(msjson.action) action = msjson.action;
+
 		this.trace(action, msdata);
 		this._readystatechange();
 	},
@@ -89,9 +95,9 @@ WSPanel.prototype = {
 	connect: function(){
 		if(this._ws) this.disconnect();
 		var ws = new WebSocket(this._ws_addr);
-		ws.onopen = this._readystatechange(this);
-		ws.onclose = this._readystatechange(this);
-		ws.onerror = this._readystatechange(this);
+		ws.onopen = this._readystatechange.bind(this);
+		ws.onclose = this._readystatechange.bind(this);
+		ws.onerror = this._readystatechange.bind(this);
 		ws.addEventListener('open',this.onSocketOpen.bind(this));
 		ws.addEventListener('message',this.onSocketMessage.bind(this));
 		this._ws = ws;
