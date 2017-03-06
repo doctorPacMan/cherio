@@ -2,7 +2,7 @@
 ini_set('display_errors',1);
 error_reporting(E_ALL);
 ob_implicit_flush(true);
-set_time_limit(30*60);
+set_time_limit(5*60);
 
 define('LIB_PHP_WEBSOCKET',__DIR__.'/lib/php-websocket/');
 require_once(LIB_PHP_WEBSOCKET.'server/lib/SplClassLoader.php');

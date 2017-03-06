@@ -1,50 +1,78 @@
 <?php
 $descriptorspec = array(
-   0 => array("pipe", "r"),  // stdin - канал, из которого дочерний процесс будет читать
-   1 => array("pipe", "w"),  // stdout - канал, в который дочерний процесс будет записывать 
-   2 => array("file", "error-output.txt", "a") // stderr - файл для записи
+	0 => array("pipe", "r"),  // stdin - канал, из которого дочерний процесс будет читать
+	1 => array("pipe", "w"),  // stdout - канал, в который дочерний процесс будет записывать 
+	2 => array("file", "error-output.txt", "a") // stderr - файл для записи
 );
 
-$descriptorspec = array(
-   0 => array("file", "piper.txt", "r"),  // stdin - канал, из которого дочерний процесс будет читать
-   1 => array("file", "pipew.txt", "w"),  // stdout - канал, в который дочерний процесс будет записывать 
-   2 => array("file", "error.txt", "a") // stderr - файл для записи
-);
+$phpexe_src = "C:/Program Apps/XAMPP/php/php.exe";
+$script_src = __DIR__."/process.php";
+//$script_src = __DIR__."/gen.php";
+$wrkdir_src = __DIR__."/tmp";
 
-$DS = DIRECTORY_SEPARATOR;
-$phpexe = __DIR__.'/../../../xampp/php/php.exe';
-$phpexe = realpath(str_replace('/',DIRECTORY_SEPARATOR,$phpexe));
-$script = __DIR__.'/process.php';
-$script = realpath(str_replace('/',DIRECTORY_SEPARATOR,$script));
-$komand = $phpexe.' '.$script;
-//die($komand);
-//mkdir($cwd, 0777);
-file_put_contents("piper.txt","");
-file_put_contents("pipew.txt","");
-file_put_contents("error.txt","");
+$phpexe_src = str_replace('/',DIRECTORY_SEPARATOR,$phpexe_src);
+$phpexe = realpath($phpexe_src) ?: FALSE;
+$script_src = str_replace('/',DIRECTORY_SEPARATOR,$script_src);
+$script = realpath($script_src) ?: FALSE;
+$wrkdir_src = str_replace('/',DIRECTORY_SEPARATOR,$wrkdir_src);
+$wrkdir = realpath($wrkdir_src) ?: FALSE;
+$files_log = "wrkdir: ".$wrkdir_src." ".(!$wrkdir?'not found':'exists at '.$wrkdir)."\r\n";
+$files_log.= "phpexe: ".$phpexe_src." ".(!$phpexe?'not found':'exists at '.$phpexe)."\r\n";
+$files_log.= "script: ".$script_src." ".(!$script?'not found':'exists at '.$script)."\r\n";
+if(!$wrkdir) {
+	mkdir($wrkdir_src, 0777);
+	$wrkdir = realpath($wrkdir_src);
+	$files_log.= "wrkdir: created at ".$wrkdir."\r\n";
+}
 
-$cwd = __DIR__.'/tmp';
+$file_read = $wrkdir.DIRECTORY_SEPARATOR.'pipe_r.txt';
+$file_write = $wrkdir.DIRECTORY_SEPARATOR.'pipe_w.txt';
+$file_error = $wrkdir.DIRECTORY_SEPARATOR.'errors.txt';
+fclose(fopen($file_read,'w'));
+fclose(fopen($file_write,'w'));
+fclose(fopen($file_error,'w'));
+echo($files_log."------: okay\r\n");
+
+//die(str_replace(" ", "\\ ", $phpexe)."\n".escapeshellcmd($phpexe)."\n".escapeshellarg($phpexe));
+
+$cwd = $wrkdir;
 $env = array('some_option' => 'aeiou');
+$dsc = array(// descriptors
+	//0 => array("pipe", "r"),  // stdin - канал, из которого дочерний процесс будет читать
+	0 => array("file", $file_read, "r"),  // stdin - канал, из которого дочерний процесс будет читать	
+	1 => array("file", $file_write, "w"),  // stdout - канал, в который дочерний процесс будет записывать 
+	2 => array("file", $file_error, "a") // stderr - файл для записи
+);
+$dsc = array(// descriptors
+	0 => array("pipe", "r"),
+	1 => array("pipe", "w"),
+	//2 => array("pipe", "a")
+	2 => array("file", $file_error, "a")
+);
 
-$process = proc_open($komand, $descriptorspec, $pipes, $cwd, $env);
-echo("process ".$process."\n");
-echo("pipes ".print_r($pipes,true)."\n");
+$cmd = escapeshellarg($phpexe).' '.$script;
 
+file_put_contents($file_error,date('h:i:s')." proc_open attempt > ".$cmd."\r\n");
+
+echo("proc_open attempt > ".$cmd."\r\n");
+$process = proc_open($cmd, $dsc, $pipes, $cwd, $env);
+echo("proc_open ".(is_resource($process)?'success ':'failure ').$process."\r\n");
+
+//proc_close($process);
+//echo("pipes ".print_r($pipes,true)."\r\n");
 if (is_resource($process)) {
-    // $pipes теперь выглядит так:
-    // 0 => записывающий обработчик, подключенный к дочернему stdin
-    // 1 => читающий обработчик, подключенный к дочернему stdout
-    // Вывод сообщений об ошибках будет добавляться в /tmp/error-output.txt
 
-    fwrite($pipes[0], '<?php print_r($_ENV); ?>');
-    fclose($pipes[0]);
+	fwrite($pipes[0], "time");// send
+	echo("\r\ntime >".fgets($pipes[1],4096));//get answer
 
-    echo stream_get_contents($pipes[1]);
-    fclose($pipes[1]);
+	//fwrite($pipes[0], "stop");// send
+	//echo("\r\nstop >".fgets($pipes[1],4096));//get answer
 
-    // Важно закрывать все каналы перед вызовом
-    // proc_close во избежание мертвой блокировки
-    $return_value = proc_close($process);
-    echo "proc_close return > ".$return_value."\n";
+	//fwrite($pipes[0], NULL);// send
+	//echo("\r\nnull >".fgets($pipes[1],4096));//get answer
+
+	fclose($pipes[0]); fclose($pipes[1]);
+	$return_value = proc_close($process);
+	echo "proc_close return > ".$return_value."\n";
 }
 ?>
