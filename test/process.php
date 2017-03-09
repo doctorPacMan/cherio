@@ -1,32 +1,58 @@
 <?php
-$processid = getmypid();
-$frequency = 500;
-$lifetime = 8000;
+//$cmmnd = !fstat(STDIN) ? NULL : fread(STDIN, 4096);
+$frequency = 750*1000;
 $iteration = 0;
-$init_time = round(microtime(true)*1000);
-$done_time = $init_time;
+$lifetime = 10*1000;
+$inittime = round(microtime(true)*1000);
+set_time_limit(round($lifetime/1000)+1);
 
-//echo("----- process ".$processid." init at ".$init_time."\r\n");
-while (true) {
-    $iteration++;
-	$nowtime = round(microtime(true)*1000);
-	$runtime = ($nowtime - $init_time);//ms
-	if($runtime>=$lifetime) break;
-	else usleep($frequency*1000);
+function process_iteration() {
+	global $lifetime;
+	global $inittime;
+	global $iteration;
 
-	$sdin_size = count(fstat(STDIN));
-	$sdin_value = fread(STDIN, 4096);
-	if($sdin_value=='stop') {
-		echo("Stop ".$iteration."\r\n");
-		exit;
-	}
-	else if($sdin_value=='time') {
-		echo("Time ".$iteration." ".date('h:i:s')."\r\n");
-		exit;
-	}
-	else echo("Tick ".$iteration." > ".$sdin_value."\r\n");
+	$runtime = round(microtime(true)*1000) - $inittime;
+	if($runtime>$lifetime) return false;
+
+	$iteration++;
+	
+	echo("tick ".$iteration." ".$runtime."\n");
+	return true;
 }
-//exit;
-//$done_time = round(microtime(true)*1000);
-//echo("----- process ".$processid." done at ".$done_time."\r\n");
+while(process_iteration()) usleep($frequency);
+
+/*
+$stdin_fstat = fstat(STDIN);
+$stdin_value = !$stdin_fstat ? NULL : fread(STDIN, 4096);
+
+if($stdin_value=='stop') {
+	echo("Stopped\r\n");
+	exit;
+}
+else if($stdin_value=='init') {
+	echo("Started\r\n");
+}
+else if($stdin_value=='time') {
+	echo("Time ".date('h:i:s')."\r\n");
+}
+else echo("Signal ".$sdin_value."\r\n");
+
+function process_iteration() {
+
+	global $inittime;
+	global $lifetime;
+
+	$processid = getmypid();
+	$stdin_fstat = fstat(STDIN);
+	$stdin_value = !$stdin_fstat ? NULL : fread(STDIN, 4096);
+
+	$runtime = (round(microtime(true)*1000) - $inittime);//ms
+	if($runtime<$lifetime) echo("ticktack ".date('i:s')."\r\n");
+	else return false;
+
+	return true;
+}
+while(process_iteration()) sleep(1);
+echo("timeout!");
+*/
 ?>

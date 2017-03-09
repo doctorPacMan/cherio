@@ -143,7 +143,8 @@ function getWebsocket() {
 	$socket = NULL;
 	//$addr = '0.0.0.0';$port = 0;
 	//$addr = '127.0.0.1';$port = 889;
-	$addr = 'cherio.io';$port = 889;
+	$addr = 'cherio.io';$port = 9000;
+	$addr = 'dev.cherio.su';$port = 9000;
 
 	trace("socket_create  > ");
 	$rs = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -151,17 +152,17 @@ function getWebsocket() {
 	else trace("ok\r\n"); 
 	$socket = $rs;
 
+	trace("socket_option  > ");
+	$rs = socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1); //разрешаем использовать один порт для нескольких соединений
+	if($rs==FALSE) exit("error: ".socket_strerror(socket_last_error($socket))."\r\n");
+	else trace("ok\r\n");
+
 	//socket_set_nonblock($socket);
 	trace("socket_bind    > ".$addr.":".$port." > ");
 	$rs = socket_bind($socket, $addr, $port); //привязываем его к указанным ip и порту
 	if($rs==FALSE) exit("error: ".socket_strerror(socket_last_error($socket))."\r\n");
 	else trace("ok\r\n");
 	
-	trace("socket_option  > ");
-	$rs = socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1); //разрешаем использовать один порт для нескольких соединений
-	if($rs==FALSE) exit("error: ".socket_strerror(socket_last_error($socket))."\r\n");
-	else trace("ok\r\n");
-
 	trace("socket_listen  > ");
 	$rs = socket_listen($socket, 3);//слушаем сокет
 	if($rs==FALSE) exit("error: ".socket_strerror(socket_last_error($socket))."\r\n");

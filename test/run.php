@@ -5,7 +5,8 @@ $descriptorspec = array(
 	2 => array("file", "error-output.txt", "a") // stderr - файл для записи
 );
 
-$phpexe_src = "C:/Program Apps/XAMPP/php/php.exe";
+$phpexe_src = "D:/xampp/php/php.exe";
+//$phpexe_src = "C:/Program Apps/XAMPP/php/php.exe";
 $script_src = __DIR__."/process.php";
 //$script_src = __DIR__."/gen.php";
 $wrkdir_src = __DIR__."/tmp";
@@ -30,7 +31,7 @@ $file_write = $wrkdir.DIRECTORY_SEPARATOR.'pipe_w.txt';
 $file_error = $wrkdir.DIRECTORY_SEPARATOR.'errors.txt';
 fclose(fopen($file_read,'w'));
 fclose(fopen($file_write,'w'));
-fclose(fopen($file_error,'w'));
+fclose(fopen($file_error,'a'));
 echo($files_log."------: okay\r\n");
 
 //die(str_replace(" ", "\\ ", $phpexe)."\n".escapeshellcmd($phpexe)."\n".escapeshellarg($phpexe));
@@ -62,8 +63,18 @@ echo("proc_open ".(is_resource($process)?'success ':'failure ').$process."\r\n")
 //echo("pipes ".print_r($pipes,true)."\r\n");
 if (is_resource($process)) {
 
+	sleep(1);
+	
+	echo("\r\ninit >");
+	fwrite($pipes[0], "init");// send
+	echo(fgets($pipes[1], 4096));//get answer
+
+	sleep(1);
+	
+	//print_r(proc_get_status($process));
+	echo("\r\ntime >");
 	fwrite($pipes[0], "time");// send
-	echo("\r\ntime >".fgets($pipes[1],4096));//get answer
+	echo(fgets($pipes[1], 4096));//get answer
 
 	//fwrite($pipes[0], "stop");// send
 	//echo("\r\nstop >".fgets($pipes[1],4096));//get answer
@@ -71,8 +82,10 @@ if (is_resource($process)) {
 	//fwrite($pipes[0], NULL);// send
 	//echo("\r\nnull >".fgets($pipes[1],4096));//get answer
 
+
+	sleep(2);
+	echo("\r\nproc_get_status: ".print_r(proc_get_status($process),true));
 	fclose($pipes[0]); fclose($pipes[1]);
-	$return_value = proc_close($process);
-	echo "proc_close return > ".$return_value."\n";
+	echo "\r\nproc_close return value ".proc_close($process)."\r\n";
 }
 ?>

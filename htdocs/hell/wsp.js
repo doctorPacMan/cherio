@@ -35,7 +35,7 @@ WSPanel.prototype = {
 		this._bttn_message.onclick = this.message.bind(this,'Превед вебсокет!');
 		
 		//this._ws_addr = 'ws://'+window.location.host+':889/echo';
-		this._ws_addr = 'ws://login:psswd@'+window.location.host+':889/echo';
+		this._ws_addr = 'ws://'+window.location.host+':9000/echo';
 		//this._ws_addr = 'ws://echo.websocket.org';
 		this._ws_username = null;
 		this._ws_userpass = null;
@@ -49,24 +49,23 @@ WSPanel.prototype = {
 	},
 	_readystatechange: function(event) {
 		
-		var st = this.state();
-		if(st===this._state) return;
-		else {
-			this._cid.innerText = !this._state ? st : this._state+' > '+st;
-			this._state = st;
-		}
+		var ost = this._state,
+			st = this.state();
+		if(st === ost) return;
+		else this._state = st;
 		
+		//console.log('onReadyStateChange',ost+' > '+st);
+		this._cid.innerText = !ost ? st : (ost+' > '+st);
+
 		if(st=='CONNECTING') this._bttn_connect.value = 'Connecting';
 		else if(st==='OPEN') this._bttn_connect.value = 'Disconnect';
 		else this._bttn_connect.value = 'Connect';
-
-		this._bttn_connect.childNodes[0].nodeValue = this._bttn_connect.value;
 		this._bttn_connect[st==='CONNECTING'?'setAttribute':'removeAttribute']('disabled','disabled');
+		this._bttn_connect.childNodes[0].nodeValue = this._bttn_connect.value;
+
 		this._bttn_message[st!=='OPEN'?'setAttribute':'removeAttribute']('disabled','disabled');
 		this._bttn_mgsauth[st!=='OPEN'?'setAttribute':'removeAttribute']('disabled','disabled');
-		
 		//this.text(st);
-		//console.log('onReadyStateChange', this._state);
 	},
 	onSocketOpen: function() {
 		console.log('onSocketOpen');

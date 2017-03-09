@@ -1,3 +1,1 @@
-<?php
-echo(__FILE__);
-?>
+<?php require_once('../index.php');?>
