@@ -40,12 +40,6 @@ try {
 } catch (PDOException $e) {
 	throwError500("Подключение не удалось:\r\n".$e->getMessage());
 }
-//$query = $_PDO->query("SELECT * FROM `users`");
-//$qdata = $query->fetchAll(PDO::FETCH_ASSOC);
-//echo("query:  ".$query->queryString."\r\n");
-//echo("result: ".print_r($qdata,true)."\r\n");
-//die();
-
 //=================================================================
 // Smarty
 //=================================================================
