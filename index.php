@@ -47,28 +47,28 @@ $pdo = new PDO($dsn, DB_USER, DB_PASS, $opt);
 // Session
 //=================================================================
 $session_save_path = BASEDIR.'tmp/session';
-if(!is_dir($session_save_path)) mkdir($session_save_path, 0777);
-else if(!is_writable($session_save_path)) chmod($session_save_path, 0777);
-
 ini_set('session.save_path', $session_save_path);
 ini_set('session.use_cookies', '1');
 ini_set('session.use_only_cookies', '1');
 ini_set('session.auto_start', '1');
 if(PHP_SESSION_NONE===session_status()) session_start();
+// initialize
+if(!is_dir($session_save_path)) mkdir($session_save_path, 0777, true);
+else if(!is_writable($session_save_path)) chmod($session_save_path, 0777);
 
 //=================================================================
 // Smarty
 //=================================================================
 require(BASEDIR.'lib/smarty/libs/Smarty.class.php');
 $Smarty = new Smarty;
-$Smarty->compile_dir = BASEDIR.'tmp/smarty/compile/';
-$Smarty->cache_dir = BASEDIR.'tmp/smarty/cache/';
+$Smarty->compile_dir = BASEDIR.'tmp/smarty_compile/';
+$Smarty->cache_dir = BASEDIR.'tmp/smarty_cache/';
 $Smarty->template_dir = BASEDIR.'tpl/';
 $Smarty->config_dir = BASEDIR.'tpl/cfg/';
-
-if(!is_dir($Smarty->compile_dir)) mkdir($Smarty->compile_dir, 0777);
+// initialize
+if(!is_dir($Smarty->compile_dir)) mkdir($Smarty->compile_dir, 0777, true);
 else if(!is_writable($Smarty->compile_dir)) chmod($Smarty->compile_dir, 0777);
-if(!is_dir($Smarty->cache_dir)) mkdir($Smarty->cache_dir, 0777);
+if(!is_dir($Smarty->cache_dir)) mkdir($Smarty->cache_dir, 0777, true);
 else if(!is_writable($Smarty->cache_dir)) chmod($Smarty->cache_dir, 0777);
 
 //=================================================================
