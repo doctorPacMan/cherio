@@ -1,5 +1,26 @@
 {include file='_intro.tpl'}
 
+{if !empty($echo)}<pre>{$echo|@print_r:true}</pre>{/if}
+
+{if !empty($users)}
+<ul>
+{foreach from=$users item='v'}
+<li><a href="./?username={$v.login}&amp;userpass={$v.pass}">{$v.login}@{$v.pass}</a></li>
+{/foreach}
+</ul>
+{/if}
+
+{if !empty($User)}
+	<p>{$User.login} <a href="./?logout">Logout</a></p>
+{else}
+	<form action="./" method="post">
+		<input name="username" type="text" />
+		<input name="userpass" type="password" />
+		<input type="submit" />
+	</form>
+{/if}
+
+{*
 <pre>
 message: {$message|default:'none'}
 session: {$smarty.session|@print_r:true}
