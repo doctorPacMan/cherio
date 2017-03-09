@@ -3,6 +3,12 @@ function rootDomainIs($domn) {
     return (substr($_SERVER['HTTP_HOST'],-strlen($domn))==$domn);
 }
 
+function throwError500($text=FALSE) {
+	header($_SERVER['SERVER_PROTOCOL'].' 500 Internal Server Error', true, 500);
+	header('Content-Type: text/plain; charset=utf-8');
+    exit($text ?: '500 Internal Server Error');
+}
+
 function setCorsHeaders() {
 	$request_origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '*';
 	$request_heders = isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']) ? $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] : '*';

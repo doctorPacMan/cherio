@@ -1,7 +1,7 @@
 <?php
 define('BASEDIR',__DIR__.'/');
-require_once(BASEDIR.'etc/init.php');
 require_once(BASEDIR.'php/utils.php');
+require_once(BASEDIR.'etc/init.php');
 
 //=================================================================
 // Other

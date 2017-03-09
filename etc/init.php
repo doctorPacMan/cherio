@@ -35,7 +35,11 @@ $dsn = "mysql:host=".DB_HOST.";dbname=".DB_NAME.";charset=utf8";
 $opt = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
 		PDO::ATTR_EMULATE_PREPARES => FALSE];
-$_PDO = new PDO($dsn, DB_USER, DB_PASS, $opt);
+try {
+	$_PDO = new PDO($dsn, DB_USER, DB_PASS, $opt);
+} catch (PDOException $e) {
+	throwError500("Подключение не удалось:\r\n".$e->getMessage());
+}
 //$query = $_PDO->query("SELECT * FROM `users`");
 //$qdata = $query->fetchAll(PDO::FETCH_ASSOC);
 //echo("query:  ".$query->queryString."\r\n");
