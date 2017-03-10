@@ -1,3 +1,4 @@
+@import url('_fonts.css');
 html, body {
 	margin: 0;
 	padding: 0;
@@ -20,7 +21,7 @@ body > div {
 	top:0px;bottom:0px;
 	overflow-x: hidden;
 	overflow-y: scroll;
-	margin: 0px;
+	margin: 50px;
 }
 body > div.scrollhide {
 	right: -25px;
@@ -35,3 +36,87 @@ pre {
 	padding: 6px 8px;
 	margin: 0;
 }
+
+form {
+	margin: 12px;
+}
+button,
+input[type="submit"],
+input[type="button"] {
+	font: 14px/16px 'Verdana';
+	cursor: pointer;
+	margin: 0;
+	border: none;
+	outline: none;
+	padding: 0 1em;
+	display: inline-block;
+	background: darkcyan;
+	height: 36px;
+	box-shadow: 2px 2px 0 rgba(0,0,0,.5);
+	position: relative;
+	left:-1px;top:-1px;
+}
+button[disabled],
+input[type="submit"][disabled],
+input[type="button"][disabled]{cursor:default}
+button:active,
+input[type="submit"]:active,
+input[type="button"]:active {
+	box-shadow: none;
+	left:0px;top:0px;
+}
+
+input[type="text"],
+input[type="password"] {
+	font: 14px/16px 'Verdana';
+	height: 36px;
+	border: 0;
+	padding: 0px .5em;
+	box-shadow: inset 0 0 0 1px darkcyan;
+}
+
+.reglog-eror {
+	margin: 12px 12px;
+	background: rgba(255,0,0,.2);
+	padding: 12px;
+	border: 1px solid darkred;
+	color: darkred;
+	box-shadow: 0 0 12px 0 rgba(0,0,0,.25);
+	font-size: 125%;
+}
+.reglog-eror:before {
+	content: 'Error: ';
+	font-weight: bold;
+}
+
+.reglog-list,
+.reglog-list li {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.reglog-list {
+	margin: 12px;
+	padding: 0 0 4px 0;
+	border-bottom: 1px solid gray;
+}
+.reglog-list li {
+	display: inline-block;
+	display: block;
+	padding: 3px 6px;
+	font: 16px/24px 'Verdana';
+	background: white;
+}
+.reglog-list a {
+	display: inline-block;
+	text-decoration: none;
+	color: black;
+}
+.reglog-list a:hover {text-decoration: underline}
+
+
+h1,h2,h3,h4,h5,h6 {
+	margin: 12px;
+	font: normal normal 100% 'Noto Sans';
+}
+h1 {font-size: 200%}

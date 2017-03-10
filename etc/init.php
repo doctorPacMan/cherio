@@ -2,6 +2,18 @@
 error_reporting(E_ALL);
 require_once('config.php');
 
+// ================================================================
+// Set locale
+// ================================================================
+setlocale(LC_ALL, "ru_CN.UTF-8");
+setlocale(LC_NUMERIC, "C");
+
+date_default_timezone_set("Asia/Novosibirsk");
+
+ini_set("default_charset", "UTF-8");
+mb_internal_encoding("UTF-8");
+mb_regex_encoding("UTF-8");
+
 //=================================================================
 // URL params
 //=================================================================
@@ -38,7 +50,8 @@ $opt = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 try {
 	$_PDO = new PDO($dsn, DB_USER, DB_PASS, $opt);
 } catch (PDOException $e) {
-	throwError500("Подключение не удалось:\r\n".$e->getMessage());
+	$emsg = iconv('CP1251','UTF-8',$e->getMessage());
+	throwError500("Подключение не удалось.\r\nPDOException: ".$emsg);
 }
 //=================================================================
 // Smarty

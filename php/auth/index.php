@@ -1,95 +1,57 @@
 <?php
-//$users = $_PDO->query("SELECT * FROM `users`")->fetchAll();
-//$Smarty->assign('users',$users);
+function getUserByLogin($login) {
+	global $_PDO;
+	$query_login = $_PDO->quote($login);
+	$query = "SELECT * FROM `users` WHERE `login`=".$query_login;
+	$rzlts = $_PDO->query($query)->fetchAll();
+	return empty($rzlts) ? NULL : $rzlts[0];
+}
+function insertNewUser($login, $pass) {
+	global $_PDO;
+	$query_login = $_PDO->quote($login);
+	$query_pass = $_PDO->quote($pass);
+	$query_hash = $_PDO->quote(md5($pass));
+	$query = "INSERT INTO `users` ";
+	$query.="(`login`, `pass`, `hash`) VALUES ";
+	$query.="(".$query_login.", ".$query_pass.", ".$query_hash.")";
+	$_PDO->query($query);
+	return getUserByLogin($login);
+}
 
-$echo = 'nothing';
-$form_eror = NULL;
-$form_warn = NULL;
-$authfailure = NULL;
+$auth_action = NULL;
+$Userdata = NULL;
+$auth_error = FALSE;
 $ff_username = empty($_POST['username']) ? NULL : $_POST['username'];
 $ff_password = empty($_POST['userpass']) ? NULL : $_POST['userpass'];
+
+if(isset($_GET['logout'])) $auth_action = 'logout';
+else if(!empty($_POST['action'])) $auth_action = $_POST['action'];
 //$ff_password = md5($ff_password);
 
-if ($ff_username && $ff_password) {
-	$query_login = $ff_username;
-	$query_pass = $ff_password;//$query_pass = md5($query_pass);
-	$query = "SELECT * FROM `users` WHERE ";
-	$query.= "`login`='".$query_login."' AND `pass`='".$query_pass."'";
-	$rezlt = $_PDO->query($query)->fetchAll();
-	if(!empty($rezlt)) $Smarty->assign('User',$rezlt[0]);
-	else $Smarty->assign('echo','incorrect login or password');
-} 
-elseif ($ff_username || $ff_password) {
-
-	$Smarty->assign('echo','empty login or password');
-
+if($auth_action==='logout') {
+	header( 'Location: ./', true, 303);
 }
-else {
-	$echo = !empty($_POST['username']) ?: 'noname';
-	$echo.= !empty($_POST['userpass']) ?: 'nopass';
-	$Smarty->assign('echo',$echo);
+else if($auth_action==='regah') {
+	if (!$ff_username || !$ff_password) $auth_error = 'Empty login or password';
+	else {
+		$user_exists = !empty(getUserByLogin($ff_username)) ? TRUE : FALSE;
+		if($user_exists) $auth_error = 'Login '.htmlspecialchars($ff_username).' already in use';
+		else $Userdata = insertNewUser($ff_username,$ff_password);
+	}
 }
+else if($auth_action==='login') {
+	if (!$ff_username || !$ff_password) $auth_error = 'Empty login or password';
+	else {
+		$user = getUserByLogin($ff_username);
+		if(empty($user)) $auth_error = 'Wrong login or password';
+		else if($user['pass']!=$ff_password) $auth_error = 'Wrong password or login';
+		else $Userdata = $user;
+	}
+}
+else {}
 
-//$Smarty->display('index.tpl');
-//$Smarty->assign('message',$message);
-//$Smarty->assign('result', $result);
+$Smarty->assign('users',$_PDO->query("SELECT * FROM `users`")->fetchAll());
+$Smarty->assign('auth_error',$auth_error);
+$Smarty->assign('User',$Userdata);
 $Smarty->display('auth/main.tpl');
-
-/*
-$action = empty($_POST['action']) ? false : $_POST['action'];
-$result = false;
-$message = 'action: '.$action;
-
-if($action=='login') {
-	
-	$ff_name = $_POST['login'];
-	$ff_pass = $_POST['password'];
-
-	$req = "`name`='".$ff_name."' AND `pass`='".md5($ff_pass)."'";
-	$req = "`name`='".$ff_name."'";
-	$res = $DB->getData('users',$req);
-
-	if(!$res) {// register
-	
-		$rn = array(
-			"name" => "'".$ff_name."'",
-			"pass" => "'".md5($ff_pass)."'",
-			"ssid" => "'".session_id()."'"
-			);
-		$q = $DB->addData('users', $rn);
-
-		$message.=' register:'.$ff_name.'@'.$ff_pass.' query:'.$q;
-
-		$res = $DB->getData('users',$req);
-		$result = $res[0];
-
-		$result['ssid'] = session_id();
-		$_SESSION['user'] = $result;
-		$User->register($result);
-	}
-	else {// login
-		$result = $res[0];
-
-		if($result['pass']==md5($ff_pass)) {
-			$rn = array("ssid"=>"'".session_id()."'");
-			$DB->editData('users', $req, $rn);
-			$result['ssid'] = session_id();
-			$_SESSION['user'] = $result;
-			$User->register($result);
-		}
-		else {
-			$result = false;
-			$message.=' Incorrect password: "'.$ff_pass.'"';
-		}
-	}
-}
-else if($action=='logout') {
-
-	unset($_SESSION['user']);
-	//$User->destroy();
-	$Smarty->assign('User',array());
-	$message = 'logout success';
-	$result = true;
-}
-*/
 ?>
