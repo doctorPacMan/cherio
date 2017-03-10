@@ -10,4 +10,5 @@
 	<script type="text/javascript" src="/js/js.js"></script>
 </head>
 <body>
+{if !empty($echo)}<pre class="phpecho">{$echo|@print_r:true}</pre>{/if}
 <div>

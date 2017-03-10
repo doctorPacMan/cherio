@@ -32,9 +32,9 @@ if(!is_dir($session_save_path)) mkdir($session_save_path, 0777, true);
 else if(!is_writable($session_save_path)) chmod($session_save_path, 0777);
 
 ini_set('session.save_path', $session_save_path);
+ini_set('session.auto_start', '1');
 ini_set('session.use_cookies', '1');
 ini_set('session.use_only_cookies', '1');
-ini_set('session.auto_start', '1');
 if(PHP_SESSION_NONE===session_status()) session_start();
 
 //=================================================================

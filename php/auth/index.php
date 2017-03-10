@@ -50,6 +50,7 @@ else if($auth_action==='login') {
 }
 else {}
 
+//$Smarty->assign('echo',['asc']);
 $Smarty->assign('users',$_PDO->query("SELECT * FROM `users`")->fetchAll());
 $Smarty->assign('auth_error',$auth_error);
 $Smarty->assign('User',$Userdata);

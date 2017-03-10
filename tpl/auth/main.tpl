@@ -1,15 +1,11 @@
 {include file='_intro.tpl'}
 
-{if !empty($echo)}<pre>{$echo|@print_r:true}</pre>{/if}
-
 {if !empty($auth_error)}
 	<p class="reglog-eror">{$auth_error}</p>
 {/if}
 
 {if !empty($User)}
-
 	<p>{$User.login} <a href="./?logout">Logout</a></p>
-
 {else}
 	
 	<div class="reglog-form">
@@ -30,13 +26,12 @@
 {/if}
 
 {if !empty($users)}
-
-<h1>Все пользователи:</h1>
-
-<ul class="reglog-list">
-{foreach from=$users item='v'}
+	<h1>Все пользователи:</h1>
+	<ul class="reglog-list">
+	{foreach from=$users item='v'}
 	<li><a href="./?username={$v.login|escape:'url'}&amp;userpass={$v.pass|escape:'url'}">[{$v.id}] {$v.login} @{$v.pass}</a></li>
-{/foreach}
-</ul>
+	{/foreach}
+	</ul>
 {/if}
+
 {include file='_outro.tpl'}
