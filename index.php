@@ -11,6 +11,7 @@ if($URL_PARAMS[0]=='users') {
 	$Smarty->assign('echo',print_r($users,true));
 	$Smarty->display('index.tpl');
 }
+else if($URL_PARAMS[0]=='sse') require_once(BASEDIR.'php/sse/index.php');
 else if($URL_PARAMS[0]=='auth') require_once(BASEDIR.'php/auth/index.php');
 else if($URL_PARAMS[0]=='html') {
 
