@@ -3,7 +3,7 @@ if(!isset($_GET['echo'])) {
 	$Smarty->display('sse.tpl');
 	exit;
 }
-set_time_limit(15);
+set_time_limit(45);
 ob_implicit_flush(true);
 session_write_close();// make session read-only
 ignore_user_abort(true);// disable default disconnect checks
@@ -16,10 +16,13 @@ header("Access-Control-Allow-Origin: *");
 //echo ":".str_repeat(" ", 2048).PHP_EOL; // 2 kB padding for IE
 //echo "retry: 2000".PHP_EOL.PHP_EOL;
 
-$lifetime = 5000;
-$frequency = 2000;
+$lifetime = 45000;
+$frequency = 5000;
 $iteration = 0;
 $starttime = round(microtime(true)*1000);
+$processid = getmypid();
+$client_id = empty($_GET['cid']) ? NULL : $_GET['cid'];
+
 while(true) {
 	if(connection_aborted()) break;
 	
@@ -29,8 +32,18 @@ while(true) {
 	$res = "id: ".$iteration.PHP_EOL;
 	$res.= "retry: 2000".PHP_EOL;
 	$res.= "event: message".PHP_EOL;
-	$res.= "data: time is ".date('h:i:s',time()).PHP_EOL;
-	$res.= "data: runtime is ".$runtime.PHP_EOL;
+
+	$data = array(
+		"pid" => $processid,
+		"cid" => $client_id,
+		"time" => date('h:i:s',time()),
+		"runtime" => $runtime
+	);
+	//$res.= "data: ".implode(PHP_EOL."data: ",$data).PHP_EOL;
+	foreach($data as $key=>$v) {
+		$val = trim(preg_replace('/\s\s+/',' ',$v));
+		$res.="data: ".$key."=".$val.PHP_EOL;
+	}
 
 	echo($res.PHP_EOL);
 	ob_flush();flush();

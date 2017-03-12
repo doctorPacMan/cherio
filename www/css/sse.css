@@ -1,0 +1,28 @@
+.wspanel {
+	float: left;
+	width: 300px;
+	height: 460px;
+	padding: 10px;
+	border: 1px solid dodgerblue;
+	margin: 25px 10px;
+	position: relative;
+	font: 12px/12px monospace;
+}
+.wspanel > b {
+	display: block;
+	padding-bottom: 8px;
+}
+.wspanel > b:before {content:'Client: '}
+.wspanel > textarea {
+	margin: 0;
+	padding: 0 3px;
+	width: calc(100% - 6px);
+	height: calc(50% - 6px);
+	overflow: hidden;
+	resize: none;
+	border: 0;
+	outline: 1px solid dodgerblue;
+	background: black;
+	color: springgreen;
+	font: 12px/16px monospace;
+}
