@@ -1,3 +1,4 @@
+php/sse/sse.log
 lib/smarty/*
 tmp/session/*
 tmp/smarty_cache/*

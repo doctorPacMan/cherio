@@ -11,7 +11,7 @@ SSEPanel.prototype = {
 		this._bttn_connect = bttn[0];
 		this._bttn_connect.onclick = this.connectToggle.bind(this);
 		
-		this.clientid = Math.random().toString(36).substr(2);
+		this.clientid = Math.random().toString(36).substr(2,7);
 		this._es_addr = 'http://'+window.location.host+'/sse/?echo&cid='+this.clientid;
 
 		//this.trace('initialize',this._es_addr);
@@ -20,7 +20,9 @@ SSEPanel.prototype = {
 		//this.connect();
 	},
 	text: function(txt) {
-		this._text.value += '['+timeStr()+'] '+(txt)+'\r\n';
+		var tv = this._text.value,
+			ts = '['+timeStr()+'] '+(txt);
+		this._text.value = ts+'\r\n'+tv;
 	},
 	onSocketOpen: function() {
 		console.log('onSocketOpen');
@@ -63,6 +65,24 @@ SSEPanel.prototype = {
 		this._bttn_connect.childNodes[0].nodeValue = this._bttn_connect.value;
 
 	},
+	_onsuccess:function(e) {
+		//return console.log(this.state(), event.type);
+		var data_msg = e.data,
+			data_str = data_msg.replace(/\r\n/g,'\n'),
+			data_arr = data_str.split('\n');
+
+		if(data_arr.indexOf('cid='+this.clientid)<0) return;
+
+		var data_obj = {}, tmp;
+		data_arr.forEach(function(itm){tmp=itm.split('=');data_obj[tmp[0]] = tmp[1]});
+		
+		// if(this.clientid!==data_obj.cid) return;
+	
+		this.text(data_obj.start+' time:'+data_obj.time);
+		//console.log('message', data_obj);
+		
+		//console.log('message',data_arr.join('; '));
+	},
 	_messagerecieved:function(e) {
 		//return console.log(this.state(), event.type);
 		var data_msg = e.data,
@@ -73,8 +93,8 @@ SSEPanel.prototype = {
 		data_arr.forEach(function(itm){tmp=itm.split('=');data_obj[tmp[0]] = tmp[1]});
 		
 		if(this.clientid!==data_obj.cid) return;
-		
-		this.text(data_obj.time+' '+data_obj.runtime);
+	
+		this.text(data_obj.start+' time:'+data_obj.time);
 		//console.log('message', data_obj);
 		
 		//console.log('message',data_arr.join('; '));
@@ -86,6 +106,7 @@ SSEPanel.prototype = {
 		es.addEventListener("open",this._readystatechange.bind(this));
 		es.addEventListener("error",this._readystatechange.bind(this));
 		es.addEventListener("message",this._messagerecieved.bind(this));
+		es.addEventListener("success",this._onsuccess.bind(this));
 		this._es = es;
 		return this;
 	},

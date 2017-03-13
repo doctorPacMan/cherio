@@ -1,5 +1,50 @@
 <?php
-if(!isset($_GET['echo'])) {
+function ftrace($txt) {
+	global $client_id;
+	$filesrc = __DIR__.DIRECTORY_SEPARATOR."sse.log";
+
+	$text = "#".$client_id." ";
+	$text.= "(".date('H:i:s',time()).") ";
+	$text.= $txt.PHP_EOL;
+
+	$fsrs = fopen($filesrc,'a');
+	fwrite($fsrs, $text);
+	fclose($fsrs);
+}
+
+if(isset($_GET['test'])) {
+
+	header("Content-Type: text/plain; charset=utf-8");
+
+	$initime = round(microtime(true)*1000);
+	$time_ts = floor($initime/1000);
+	$time_ms = $initime - time()*1000;
+	$timetxt = date('y/m/d H:i:s',$time_ts).".".$time_ms;
+	$filetxt = date('ymd_His',$time_ts)."_".$time_ms.".txt";
+	$filesrc = __DIR__.DIRECTORY_SEPARATOR.$filetxt;
+	
+
+	echo("> ".$filetxt.PHP_EOL);
+	echo("> ".$timetxt.PHP_EOL);
+	echo("> ".$filesrc.PHP_EOL);
+	//echo("> ".$proc_id.PHP_EOL);
+	//echo("> ".$initime.PHP_EOL);
+	//echo("> ".$starttime.PHP_EOL);
+	//echo("> ".time().PHP_EOL);
+	//echo("> ".($initime - time()*1000).PHP_EOL);
+	//echo("> ".microtime().PHP_EOL);
+	//echo("> ".microtime(true).PHP_EOL);
+	//echo("> ".date('H_i_s',floor($initime/1000)));
+
+	//$fsrs = fopen($filesrc,'a');
+	//fwrite($fsrs, $timetxt);
+	//fclose($fsrs);
+	
+	ftrace($timetxt);
+	
+	exit;
+}
+else if(!isset($_GET['echo'])) {
 	$Smarty->display('sse.tpl');
 	exit;
 }
@@ -7,24 +52,24 @@ set_time_limit(45);
 ob_implicit_flush(true);
 session_write_close();// make session read-only
 ignore_user_abort(true);// disable default disconnect checks
-//header($_SERVER['SERVER_PROTOCOL']." 200 OK", true, 200);
-//header("Content-Type: text/event-stream; charset=utf-8");
-header("Content-Type: text/event-stream");
+header($_SERVER['SERVER_PROTOCOL']." 200 OK", true, 200);
+header("Content-Type: text/event-stream; charset=utf-8");
 header("Cache-Control: no-cache");
 header("Access-Control-Allow-Origin: *");
 
-//echo ":".str_repeat(" ", 2048).PHP_EOL; // 2 kB padding for IE
-//echo "retry: 2000".PHP_EOL.PHP_EOL;
-
-$lifetime = 45000;
-$frequency = 5000;
+$lifetime = 10000;
+$frequency = 2500;
 $iteration = 0;
 $starttime = round(microtime(true)*1000);
-$processid = getmypid();
+$begintime = date('H:i:s',time());
 $client_id = empty($_GET['cid']) ? NULL : $_GET['cid'];
+$stoprezon = 'justdie';
+
+ftrace("INIT");
 
 while(true) {
-	if(connection_aborted()) break;
+	$stoprezon = '?';
+	if(connection_aborted()) {$stoprezon='aborted';break;}
 	
 	$iteration++;
 	$runtime = (round(microtime(true)*1000) - $starttime);//ms
@@ -34,9 +79,9 @@ while(true) {
 	$res.= "event: message".PHP_EOL;
 
 	$data = array(
-		"pid" => $processid,
 		"cid" => $client_id,
 		"time" => date('h:i:s',time()),
+		"start" => $begintime,
 		"runtime" => $runtime
 	);
 	//$res.= "data: ".implode(PHP_EOL."data: ",$data).PHP_EOL;
@@ -48,11 +93,12 @@ while(true) {
 	echo($res.PHP_EOL);
 	ob_flush();flush();
 
-	if($runtime>=$lifetime)break;
+	if($runtime>=$lifetime) {$stoprezon='timeout';break;}
 	else usleep($frequency*1000);
 }
-/*
+ftrace("STOP by ".$stoprezon);
 
+/*
 $iteration = 0;
 $lifetime = 5000;
 $frequency = 1000;
