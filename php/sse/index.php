@@ -1,18 +1,35 @@
 <?php
+$logfile = __DIR__.DIRECTORY_SEPARATOR."sse.log";
+$mesfile = __DIR__.DIRECTORY_SEPARATOR."chat.log";
 function ftrace($txt) {
 	global $client_id;
-	$filesrc = __DIR__.DIRECTORY_SEPARATOR."sse.log";
+	global $logfile;
 
 	$text = "#".$client_id." ";
 	$text.= "(".date('H:i:s',time()).") ";
 	$text.= $txt.PHP_EOL;
 
-	$fsrs = fopen($filesrc,'a');
+	$fsrs = fopen($logfile,'a');
 	fwrite($fsrs, $text);
 	fclose($fsrs);
 }
-
-if(isset($_GET['test'])) {
+if(isset($_GET['message'])) {
+	header("Content-type: application/json; charset=utf-8");
+	
+	$logdata = file_get_contents($logfile,FALSE,NULL,0);
+	if($logdata===FALSE) $logdata = 'file not found';
+	
+	$txtdata = empty($_POST['data']) ? NULL : $_POST['data'];
+	$response = array(
+		'text' => $txtdata,
+		'data' => $logdata,
+		'time' => date('y/m/d H:i:s',time()),
+		'message' => '"Message!"'
+	);
+	echo(json_encode($response));
+	exit;
+}
+else if(isset($_GET['test'])) {
 
 	header("Content-Type: text/plain; charset=utf-8");
 
@@ -48,6 +65,7 @@ else if(!isset($_GET['echo'])) {
 	$Smarty->display('sse.tpl');
 	exit;
 }
+
 set_time_limit(45);
 ob_implicit_flush(true);
 session_write_close();// make session read-only
@@ -63,13 +81,13 @@ $iteration = 0;
 $starttime = round(microtime(true)*1000);
 $begintime = date('H:i:s',time());
 $client_id = empty($_GET['cid']) ? NULL : $_GET['cid'];
-$stoprezon = 'justdie';
+$diereason = 'justdie';
 
 ftrace("INIT");
 
 while(true) {
-	$stoprezon = '?';
-	if(connection_aborted()) {$stoprezon='aborted';break;}
+
+	if(connection_aborted()) {$diereason='aborted';break;}
 	
 	$iteration++;
 	$runtime = (round(microtime(true)*1000) - $starttime);//ms
@@ -93,10 +111,10 @@ while(true) {
 	echo($res.PHP_EOL);
 	ob_flush();flush();
 
-	if($runtime>=$lifetime) {$stoprezon='timeout';break;}
+	if($runtime>=$lifetime) {$diereason='timeout';break;}
 	else usleep($frequency*1000);
 }
-ftrace("STOP by ".$stoprezon);
+ftrace("STOP by ".$diereason);
 
 /*
 $iteration = 0;

@@ -10,6 +10,8 @@ SSEPanel.prototype = {
 		var bttn = node.querySelectorAll('button');
 		this._bttn_connect = bttn[0];
 		this._bttn_connect.onclick = this.connectToggle.bind(this);
+		this._bttn_message = bttn[1];
+		this._bttn_message.onclick = this.messageSend.bind(this);
 		
 		this.clientid = Math.random().toString(36).substr(2,7);
 		this._es_addr = 'http://'+window.location.host+'/sse/?echo&cid='+this.clientid;
@@ -116,10 +118,10 @@ SSEPanel.prototype = {
 		delete this._es;
 		return this;
 	},
-	message: function(msg){
-		if(!this._ws) return console.log('no socket');
-		//console.log(this.state(), 'message:', msg);
-		this._ws.send(msg);
+	messageSend: function(msg){
+		sendAjax('./?message','Hello!',function(json){
+			console.log('RES',json);
+		});
 	},
 	state: function() {
 		if(!this._es) return 'CLOSED';

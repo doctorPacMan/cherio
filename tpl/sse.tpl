@@ -6,16 +6,19 @@
 		<b>CLOSED</b>
 		<textarea placeholder=""></textarea>
 		<button>Connect</button>
+		<button>Message</button>
 	</div>
 	<div class="wspanel" id="wspanel2">
 		<b>CLOSED</b>
 		<textarea placeholder=""></textarea>
 		<button>Connect</button>
+		<button>Message</button>
 	</div>
 	<div class="wspanel" id="wspanel3">
 		<b>CLOSED</b>
 		<textarea placeholder=""></textarea>
 		<button>Connect</button>
+		<button>Message</button>
 	</div>
 
 <script>
