@@ -94,7 +94,7 @@ SSEPanel.prototype = {
 		var data_obj = {}, tmp;
 		data_arr.forEach(function(itm){tmp=itm.split('=');data_obj[tmp[0]] = tmp[1]});
 		
-		if(this.clientid!==data_obj.cid) return;
+		//if(this.clientid!==data_obj.cid) return;
 	
 		this.text(data_obj.start+' time:'+data_obj.time);
 		//console.log('message', data_obj);

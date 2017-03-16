@@ -1,6 +1,21 @@
 <?php
 $logfile = __DIR__.DIRECTORY_SEPARATOR."sse.log";
 $mesfile = __DIR__.DIRECTORY_SEPARATOR."chat.log";
+
+function messageResponse($id, $cid, $data) {
+
+	$res = ":Just a message".PHP_EOL;
+	$res.= "id: ".$id.PHP_EOL;
+	$res.= "cid: ".$cid.PHP_EOL;
+	$res.= "retry: 2000".PHP_EOL;
+	$res.= "event: message".PHP_EOL;
+	foreach($data as $key=>$v) {
+		$val = trim(preg_replace('/\s\s+/',' ',$v));
+		$res.="data: ".$key."=".$val.PHP_EOL;
+	}
+	return $res;
+}
+
 function ftrace($txt) {
 	global $client_id;
 	global $logfile;
@@ -13,16 +28,20 @@ function ftrace($txt) {
 	fwrite($fsrs, $text);
 	fclose($fsrs);
 }
+
 if(isset($_GET['message'])) {
 	header("Content-type: application/json; charset=utf-8");
 	
-	$logdata = file_get_contents($logfile,FALSE,NULL,0);
-	if($logdata===FALSE) $logdata = 'file not found';
+	$dtm = date('H:i:s',time());
+	$txt = empty($_REQUEST['data']) ? 'ping' : $_REQUEST['data'];
+	$txt = $dtm.'>'.trim(preg_replace('/\s\s+/',' ',$txt));
+	$txt = (file_exists($mesfile) ? PHP_EOL : '').$txt;
+	$res = file_put_contents($mesfile,$txt,FILE_APPEND);
 	
-	$txtdata = empty($_POST['data']) ? NULL : $_POST['data'];
 	$response = array(
-		'text' => $txtdata,
-		'data' => $logdata,
+		'txt' => $txt,
+		'res' => $res,
+		'size' => filesize($mesfile),
 		'time' => date('y/m/d H:i:s',time()),
 		'message' => '"Message!"'
 	);
@@ -39,7 +58,6 @@ else if(isset($_GET['test'])) {
 	$timetxt = date('y/m/d H:i:s',$time_ts).".".$time_ms;
 	$filetxt = date('ymd_His',$time_ts)."_".$time_ms.".txt";
 	$filesrc = __DIR__.DIRECTORY_SEPARATOR.$filetxt;
-	
 
 	echo("> ".$filetxt.PHP_EOL);
 	echo("> ".$timetxt.PHP_EOL);
@@ -72,10 +90,10 @@ session_write_close();// make session read-only
 ignore_user_abort(true);// disable default disconnect checks
 header($_SERVER['SERVER_PROTOCOL']." 200 OK", true, 200);
 header("Content-Type: text/event-stream; charset=utf-8");
-header("Cache-Control: no-cache");
 header("Access-Control-Allow-Origin: *");
+header("Cache-Control: no-cache");
 
-$lifetime = 10000;
+$lifetime = 20000;
 $frequency = 2500;
 $iteration = 0;
 $starttime = round(microtime(true)*1000);
@@ -83,106 +101,37 @@ $begintime = date('H:i:s',time());
 $client_id = empty($_GET['cid']) ? NULL : $_GET['cid'];
 $diereason = 'justdie';
 
-ftrace("INIT");
+$eventfile = fopen($mesfile,'r');
+$filesize = NULL;
 
+ftrace("INIT");
 while(true) {
 
 	if(connection_aborted()) {$diereason='aborted';break;}
 	
 	$iteration++;
 	$runtime = (round(microtime(true)*1000) - $starttime);//ms
-
-	$res = "id: ".$iteration.PHP_EOL;
-	$res.= "retry: 2000".PHP_EOL;
-	$res.= "event: message".PHP_EOL;
-
-	$data = array(
-		"cid" => $client_id,
-		"time" => date('h:i:s',time()),
-		"start" => $begintime,
-		"runtime" => $runtime
-	);
-	//$res.= "data: ".implode(PHP_EOL."data: ",$data).PHP_EOL;
-	foreach($data as $key=>$v) {
-		$val = trim(preg_replace('/\s\s+/',' ',$v));
-		$res.="data: ".$key."=".$val.PHP_EOL;
+	
+	rewind($eventfile);// get full content
+	clearstatcache(false,$mesfile);
+	$new_size = filesize($mesfile);
+	
+	if($filesize != $new_size) {
+		$filesize = $new_size;
+		$cont = fread($eventfile,$filesize);
+		$data = array(
+			"time" => date('H:i:s',time()),
+			"size" => $filesize,
+			"cont" => $cont
+		);
+		$msg = messageResponse($iteration, $client_id, $data);
+		echo($msg.PHP_EOL);
 	}
 
-	echo($res.PHP_EOL);
 	ob_flush();flush();
-
 	if($runtime>=$lifetime) {$diereason='timeout';break;}
 	else usleep($frequency*1000);
 }
+fclose($eventfile);
 ftrace("STOP by ".$diereason);
-
-/*
-$iteration = 0;
-$lifetime = 5000;
-$frequency = 1000;
-$starttime = round(microtime(true)*1000);
-while(true) {
-
-	if(connection_aborted()) exit;
-
-	$iteration++;
-	$runtime = (round(microtime(true)*1000) - $starttime);//ms
-
-	$res = "retry: 5000".PHP_EOL;
-	//$res.= "event: time".PHP_EOL;
-	$res.= "data: time is ".date('h:i:s',time()).PHP_EOL;
-	$res.= "id: ".$iteration.PHP_EOL;
-	echo($res.PHP_EOL);
-	//flush();
-
-	if($runtime>=$lifetime)break;
-	else usleep($frequency*1000);
-}
-*/
-		
-/*
-		// set headers for stream
-        header("Content-Type: text/event-stream");
-        header("Cache-Control: no-cache");
-        header("Access-Control-Allow-Origin: *");
-
-        // Is this a new stream or an existing one?
-        $lastEventId = floatval(isset($_SERVER["HTTP_LAST_EVENT_ID"]) ? $_SERVER["HTTP_LAST_EVENT_ID"] : 0);
-        if ($lastEventId == 0) {
-            $lastEventId = floatval(isset($_GET["lastEventId"]) ? $_GET["lastEventId"] : 0);
-        }
-
-		echo ":" . str_repeat(" ", 2048) . "\n"; // 2 kB padding for IE
-		echo "retry: 2000\n";
-
-		// start stream
-if(false) while(true) {
-
-			if(connection_aborted()) exit();
-
-			// here you will want to get the latest event id you have created on the server, but for now we will increment and force an update
-				$latestEventId = $lastEventId+1;
-
-				if($lastEventId < $latestEventId) {
-
-					echo "id: " . $latestEventId . "\n";
-					echo "data: Howdy (".$latestEventId.") \n\n";
-					$lastEventId = $latestEventId;
-					ob_flush();
-					flush();
-
-				}
-
-				else{
-				
-					// no new data to send
-					echo ": heartbeat\n\n";
-					ob_flush();
-					flush();
-					
-				}
-
-		sleep(2);
-}
-*/			
 ?>
