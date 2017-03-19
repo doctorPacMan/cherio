@@ -13,6 +13,7 @@ if($URL_PARAMS[0]=='users') {
 }
 else if($URL_PARAMS[0]=='sse') require_once(BASEDIR.'php/sse/index.php');
 else if($URL_PARAMS[0]=='auth') require_once(BASEDIR.'php/auth/index.php');
+else if($URL_PARAMS[0]=='chat') require_once(BASEDIR.'php/chat/index.php');
 else if($URL_PARAMS[0]=='html') {
 
 	$Smarty->display('index.tpl');

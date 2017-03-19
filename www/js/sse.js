@@ -15,6 +15,7 @@ SSEPanel.prototype = {
 		
 		this.clientid = Math.random().toString(36).substr(2,7);
 		this._es_addr = 'http://'+window.location.host+'/sse/?echo&cid='+this.clientid;
+		this._es_addr = 'http://'+window.location.host+'/chat/?echo&cid='+this.clientid;
 
 		//this.trace('initialize',this._es_addr);
 		this._state = null;
@@ -96,8 +97,8 @@ SSEPanel.prototype = {
 		
 		//if(this.clientid!==data_obj.cid) return;
 	
-		this.text(data_obj.start+' time:'+data_obj.time);
-		//console.log('message', data_obj);
+		//this.text(data_obj.start+' time:'+data_obj.time);
+		console.log('message', data_obj);
 		
 		//console.log('message',data_arr.join('; '));
 	},
