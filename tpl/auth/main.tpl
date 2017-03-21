@@ -5,7 +5,7 @@
 {/if}
 
 {if !empty($User)}
-	<p>{$User.login} <a href="./?logout">Logout</a></p>
+	<pre>{$User|@print_r:true}</pre>
 {else}
 	
 	<div class="reglog-form">

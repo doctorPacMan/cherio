@@ -29,14 +29,21 @@ else if(!empty($_POST['action'])) $auth_action = $_POST['action'];
 //$ff_password = md5($ff_password);
 
 if($auth_action==='logout') {
+	unset($_SESSION['user']);
 	header( 'Location: ./', true, 303);
+}
+else if(!empty($_SESSION['user'])) {
+	$Userdata = $_SESSION['user'];
 }
 else if($auth_action==='regah') {
 	if (!$ff_username || !$ff_password) $auth_error = 'Empty login or password';
 	else {
 		$user_exists = !empty(getUserByLogin($ff_username)) ? TRUE : FALSE;
 		if($user_exists) $auth_error = 'Login '.htmlspecialchars($ff_username).' already in use';
-		else $Userdata = insertNewUser($ff_username,$ff_password);
+		else {
+			$Userdata = insertNewUser($ff_username,$ff_password);
+			$_SESSION['user'] = $Userdata;
+		}
 	}
 }
 else if($auth_action==='login') {
@@ -45,7 +52,10 @@ else if($auth_action==='login') {
 		$user = getUserByLogin($ff_username);
 		if(empty($user)) $auth_error = 'Wrong login or password';
 		else if($user['pass']!=$ff_password) $auth_error = 'Wrong password or login';
-		else $Userdata = $user;
+		else {
+			$Userdata = $user;
+			$_SESSION['user'] = $Userdata;
+		}
 	}
 }
 else {}

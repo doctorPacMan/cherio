@@ -46,6 +46,21 @@ form {
 button,
 input[type="submit"],
 input[type="button"] {
+	display: inline-block;
+	font: 14px/28px 'Verdana';
+	padding: 0 1em;
+	border: 0;
+	margin: 0;
+	outline: 0;
+	height: 36px;
+	border-radius: 3px;
+	border: 1px solid darkgray;
+	background: whitesmoke;
+}
+
+button.btn,
+input.btn[type="submit"],
+input.btn[type="button"] {
 	font: 14px/16px 'Verdana';
 	cursor: pointer;
 	margin: 0;
@@ -59,12 +74,12 @@ input[type="button"] {
 	position: relative;
 	left:-1px;top:-1px;
 }
-button[disabled],
-input[type="submit"][disabled],
-input[type="button"][disabled]{cursor:default}
-button:active,
-input[type="submit"]:active,
-input[type="button"]:active {
+button.btn[disabled],
+input.btn[type="submit"][disabled],
+input.btn[type="button"][disabled]{cursor:default}
+button.btn:active,
+input.btn[type="submit"]:active,
+input.btn[type="button"]:active {
 	box-shadow: none;
 	left:0px;top:0px;
 }
@@ -123,3 +138,20 @@ h1,h2,h3,h4,h5,h6 {
 	font: normal normal 100% 'Noto Sans';
 }
 h1 {font-size: 200%}
+
+header {
+	height: 36px;
+	padding: 0 12px;
+	background: dodgerblue;
+	color: white;
+	font: 135%/36px Verdana;
+}
+header > button {
+	position: relative;
+	left: 12px;
+	float: right;
+	height: 100%;
+	border: 0;
+	border-left: 1px solid white;
+	background: transparent;
+}
