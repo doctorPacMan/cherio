@@ -1,5 +1,10 @@
 {include file='_intro.tpl'}
 <pre>{if !empty($echo)}{$echo}{else}INDEX{/if}</pre>
+
+
+<button>Button</button>
+<input type="button" value="Button" />
+
 {include file='_outro.tpl'}
 {*
 <button>Button</button>

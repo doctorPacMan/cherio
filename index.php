@@ -2,10 +2,19 @@
 define('BASEDIR',__DIR__.'/');
 require_once(BASEDIR.'php/utils.php');
 require_once(BASEDIR.'etc/init.php');
+require_once(BASEDIR.'php/user.php');
 
 //=================================================================
-// Other
+// User
 //=================================================================
+$User = new AppUser();
+$Userdata = $User->userdata;
+$Smarty->assign('User',$Userdata);
+
+//=================================================================
+// Router
+//=================================================================
+$Smarty->assign('URL',$URL_PARAMS);
 if($URL_PARAMS[0]=='users') {
 	$users = $_PDO->query("SELECT * FROM `users`")->fetchAll();
 	$Smarty->assign('echo',print_r($users,true));

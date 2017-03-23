@@ -19,7 +19,7 @@ function insertNewUser($login, $pass) {
 }
 
 $auth_action = NULL;
-$Userdata = NULL;
+//$Userdata = NULL;
 $auth_error = FALSE;
 $ff_username = empty($_POST['username']) ? NULL : $_POST['username'];
 $ff_password = empty($_POST['userpass']) ? NULL : $_POST['userpass'];
@@ -29,11 +29,8 @@ else if(!empty($_POST['action'])) $auth_action = $_POST['action'];
 //$ff_password = md5($ff_password);
 
 if($auth_action==='logout') {
-	unset($_SESSION['user']);
-	header( 'Location: ./', true, 303);
-}
-else if(!empty($_SESSION['user'])) {
-	$Userdata = $_SESSION['user'];
+	$User->destroy();
+	header('Location: ./', true, 303);
 }
 else if($auth_action==='regah') {
 	if (!$ff_username || !$ff_password) $auth_error = 'Empty login or password';
@@ -41,28 +38,26 @@ else if($auth_action==='regah') {
 		$user_exists = !empty(getUserByLogin($ff_username)) ? TRUE : FALSE;
 		if($user_exists) $auth_error = 'Login '.htmlspecialchars($ff_username).' already in use';
 		else {
-			$Userdata = insertNewUser($ff_username,$ff_password);
-			$_SESSION['user'] = $Userdata;
+			$User->insertNewUser($ff_username,$ff_password);
+			header('Location: ./', true, 303);
 		}
 	}
 }
 else if($auth_action==='login') {
 	if (!$ff_username || !$ff_password) $auth_error = 'Empty login or password';
 	else {
-		$user = getUserByLogin($ff_username);
-		if(empty($user)) $auth_error = 'Wrong login or password';
-		else if($user['pass']!=$ff_password) $auth_error = 'Wrong password or login';
+		$bdata = $User->getUserByLogin($ff_username);
+		if(empty($bdata)) $auth_error = 'Wrong login or password';
+		else if($bdata['pass']!=$ff_password) $auth_error = 'Wrong password or login';
 		else {
-			$Userdata = $user;
-			$_SESSION['user'] = $Userdata;
+			$User->register($bdata);
+			header('Location: ./', true, 303);
 		}
 	}
 }
 else {}
 
-//$Smarty->assign('echo',['asc']);
 $Smarty->assign('users',$_PDO->query("SELECT * FROM `users`")->fetchAll());
 $Smarty->assign('auth_error',$auth_error);
-$Smarty->assign('User',$Userdata);
 $Smarty->display('auth/main.tpl');
 ?>
