@@ -13,16 +13,19 @@ html, body {
 body {
 	font: .75em/1.25 'Arial';
 }
+pre {
+	font: 14px/16px monospace;
+	font-family: 'Consolas', 'Courier New', monospace;
+	background: lightyellow;
+	padding: 6px 8px;
+	margin: 0;
+}
 pre.phpecho {
 	position: relative;
 	z-index: 50;
 	box-shadow: inset 0 0 0 1px black;
-	font: 14px/16px monospace;
-	font-family: 'Consolas', 'Courier New', monospace;
 	background: rgb(0,75,120);
 	color: white;
-	padding: 6px 8px;
-	margin: 0;
 }
 body > div {
 	outline: 1px solid dodgerblue;

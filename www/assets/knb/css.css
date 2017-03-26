@@ -1,0 +1,79 @@
+.logdata {
+	width: 100%;
+	height: 100px;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	background: whitesmoke;
+}
+
+.knbls {
+	display: block;
+	background: whitesmoke;
+	border: 0px solid whitesmoke;
+	border-radius: 3px;
+	box-shadow: 0 0 0 1px gray;
+	width: 354px;
+	height: 348px;
+	border-width: 6px 3px;
+	margin: 20px;
+	position: relative;
+}
+.knbls:before {
+	content: '';
+	position: absolute;
+	left: calc(50% - 120px);
+	top: 64px;
+	border-radius: 50%;
+	box-shadow: inset 0 0 0 2px white;
+	width: 240px;
+	height: 240px;
+}
+.knbls > .bttn {
+	position: absolute;
+	left: calc(50% - 64px);
+	top: 0;
+	margin: 0;
+}
+.knbls > .bttn {
+	width: 128px;
+	height: 128px;
+	border: 0;
+	border-radius: 50%;
+	background: white url(/assets/knb/knb.png) no-repeat 50% 0;
+	box-shadow: inset 0 0 1px 1px white;
+}
+.knbls > .bttn:after {
+	content: '';
+	position: absolute;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+	border-radius: 50%;
+	background: rgba(255,0,0,.05);
+}
+.knbls > .bttn:hover:after {
+	box-shadow: inset 0 0 0 8px darkcyan;
+	background: rgba(255,255,255,.25);
+}
+.knbls > .bttn.bttn-rock {
+	background-position: 50% -0px;
+	margin: 0px 0 0 0px;
+}
+.knbls > .bttn.bttn-scissors {
+	background-position: 50% -128px;
+	margin: 84px 0 0 -112px;
+}
+.knbls > .bttn.bttn-paper {
+	background-position: 50% -256px;
+	margin: 84px 0 0 112px;
+}
+.knbls > .bttn.bttn-lizard {
+	background-position: 50% -384px;
+	margin: 218px 0 0 -69px;
+}
+.knbls > .bttn.bttn-spock {
+	background-position: 50% -512px;
+	margin: 218px 0 0 69px;
+}

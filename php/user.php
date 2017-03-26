@@ -16,6 +16,21 @@ function __construct() {
 	$this->userdata = $userdata;
 	//die('<pre>user: '.print_r($this->userdata,true).'</pre>');
 }
+public function getUserDuels($uid) {
+	global $_PDO;
+
+	$query = "SELECT * FROM `duels` WHERE duels.player1=".$uid;
+	$query.= " OR duels.player2=".$uid;
+	$duels = $_PDO->query($query)->fetch();
+	return $duels ?: NULL;
+}
+public function getUserById($id) {
+	global $_PDO;
+
+	$query = "SELECT * FROM `users` WHERE users.id=".$id;
+	$user = $_PDO->query($query)->fetch();
+	return $user ?: NULL;
+}
 public function getUserByToken($token) {
 	global $_PDO;
 
@@ -33,6 +48,7 @@ public function getUserByLogin($login) {
 	return $user ?: NULL;
 }
 public function initialize($user) {
+	$user['duel'] = 'duel10000111';
 	return $user;
 }
 public function destroy() {
@@ -68,14 +84,8 @@ public function register($user) {
 	return $this->initialize($user);
 }
 public function insertNewUser($login, $pass) {
-	global $_PDO;
-	$query_login = $_PDO->quote($login);
-	$query_pass = $_PDO->quote($pass);
-	$query = "INSERT INTO `users` ";
-	$query.="(`login`, `pass`) VALUES ";
-	$query.="(".$query_login.", ".$query_pass.")";
-	$_PDO->query($query);
-
+	global $_DBR;
+	$_DBR->insertNewUser($login, $pass);
 	$bdata = $this->getUserByLogin($login);
 	return $this->register($bdata);
 }

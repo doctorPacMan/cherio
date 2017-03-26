@@ -40,6 +40,7 @@ if(PHP_SESSION_NONE===session_status()) session_start();
 //=================================================================
 // MySQL
 //=================================================================
+require_once(BASEDIR.'php/db.php');
 ini_set('mysql.default_host',DB_HOST);
 ini_set('mysql.default_user',DB_USER);
 ini_set('mysql.default_password',DB_PASS);
@@ -53,6 +54,7 @@ try {
 	$emsg = iconv('CP1251','UTF-8',$e->getMessage());
 	throwError500("Подключение не удалось.\r\nPDOException: ".$emsg);
 }
+$_DBR = new DataBaseRequests($_PDO ?: NULL);
 //=================================================================
 // Smarty
 //=================================================================

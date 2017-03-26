@@ -1,12 +1,13 @@
 <?php
-define('BASEDIR',__DIR__.'/');
+define('BASEDIR',__DIR__.DIRECTORY_SEPARATOR);
+define('TEMPDIR',BASEDIR.'tmp'.DIRECTORY_SEPARATOR);
 require_once(BASEDIR.'php/utils.php');
 require_once(BASEDIR.'etc/init.php');
-require_once(BASEDIR.'php/user.php');
 
 //=================================================================
 // User
 //=================================================================
+require_once(BASEDIR.'php/user.php');
 $User = new AppUser();
 $Userdata = $User->userdata;
 $Smarty->assign('User',$Userdata);
@@ -20,6 +21,7 @@ if($URL_PARAMS[0]=='users') {
 	$Smarty->assign('echo',print_r($users,true));
 	$Smarty->display('index.tpl');
 }
+else if($URL_PARAMS[0]=='knb') require_once(BASEDIR.'php/knb/index.php');
 else if($URL_PARAMS[0]=='sse') require_once(BASEDIR.'php/sse/index.php');
 else if($URL_PARAMS[0]=='auth') require_once(BASEDIR.'php/auth/index.php');
 else if($URL_PARAMS[0]=='chat') require_once(BASEDIR.'php/chat/index.php');

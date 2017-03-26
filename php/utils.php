@@ -9,7 +9,7 @@ function throwError500($text=FALSE) {
     exit($text ?: '500 Internal Server Error');
 }
 
-function setCorsHeaders() {
+function setCorsHeaders($content_type='text/plain') {
 	$request_origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '*';
 	$request_heders = isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']) ? $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] : '*';
 	header("Access-Control-Allow-Origin: ".$request_origin);
@@ -17,6 +17,7 @@ function setCorsHeaders() {
 	header("Access-Control-Allow-Methods: GET, POST, OPTIONS, HEAD");         
 	header("Access-Control-Allow-Credentials: true");
 	header("Access-Control-Max-Age: 86400");// cache for 1 day
+	header("Content-Type: ".$content_type."; charset=utf-8");
 	return $request_origin;
 }
 

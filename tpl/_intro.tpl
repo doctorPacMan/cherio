@@ -7,10 +7,13 @@
     <meta name="description" content="Cherio">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="/css/css.css" />
-	<link rel="stylesheet" href="/css/ticktack.css" />
 	
 	<script type="text/javascript" src="/js/utils.js"></script>
+	<script type="text/javascript" src="/js/ajax.js"></script>
 	<script type="text/javascript" src="/js/js.js"></script>
+
+	<link href="/assets/knb/css.css?v={$smarty.now}" rel="stylesheet" />
+	<script src="/assets/knb/js.js?v={$smarty.now}" type="text/javascript"></script>
 
 </head>
 <body>
