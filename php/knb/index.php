@@ -2,6 +2,7 @@
 require_once('duel.php');
 
 $Duel = new Duel();
+//$Duel->create(7,8);die();
 
 if(!empty($_GET)) die(require_once('ajax.php'));
 
@@ -10,16 +11,21 @@ $player1 = NULL;
 $player2 = NULL;
 $logdata = NULL;
 
-$userduel = $_DBR->getUserDuels($Userdata['id']);
-$dueldata = !empty($userduel) ? $userduel[0] : FALSE;
+if(!empty($Userdata)) {
 
-if($dueldata) {
-	$Duel->restore($dueldata['id']);
-	$duel = $Duel->data;
-	$player1 = $_DBR->getUserById($Duel->player1);
-	$player2 = $_DBR->getUserById($Duel->player2);
-	$logdata = $Duel->logdata;
+	$userduel = $_DBR->getUserDuels($Userdata['id']);
+	$dueldata = !empty($userduel) ? $userduel[0] : FALSE;
+
+	if($dueldata) {
+		$Duel->restore($dueldata['id']);
+		$duel = $Duel->data;
+		$player1 = $_DBR->getUserById($Duel->player1);
+		$player2 = $_DBR->getUserById($Duel->player2);
+		$logdata = $Duel->logdata;
+	}
+
 }
+
 $Smarty->assign('duel',$duel);
 $Smarty->assign('player1',$player1);
 $Smarty->assign('player2',$player2);

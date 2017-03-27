@@ -1,8 +1,10 @@
 <?php
 setCorsHeaders('text/plain');
 //setCorsHeaders('application/json');
-//header('Content-Type: ');
 
+function roundCommit($rdata) {
+	//echo(PHP_EOL.print_r($rdata,true));
+}
 //$actn = $_GET['action'];
 //echo("action=".$actn."\r\n");
 
@@ -14,13 +16,9 @@ $workfrom = $dueldata['player1']==$uid ? 'player1' : 'player2';
 echo(print_r($dueldata,true));
 
 if(!empty($_GET['spell'])) {
-	$str = $Duel->message($workfrom,'spellcast',$_GET['spell']);
-
-	$file = fopen($filename,'a');
-	fwrite($file, PHP_EOL.$str);
-	fclose($file);
-
-	echo(PHP_EOL.$str);
+	$message_spell = $Duel->message($workfrom,'spellcast',$_GET['spell']);
+	file_put_contents($filename, PHP_EOL.$message_spell, FILE_APPEND);
+	echo(PHP_EOL.$message_spell);
 }
 
 $file = fopen($filename,'r');
@@ -28,23 +26,31 @@ $data = fread($file,filesize($filename));
 fclose($file);
 $lines = explode(PHP_EOL,$data);
 
- $p1ova = $p2ova = FALSE;
+$p1spell = $p2spell = FALSE;
+$rounds = array(array());
+$round_num = 0;
 for($i=1;$i<count($lines);$i++) {
 
 	$b = $Duel->messageRead($lines[$i]);
 	if(!$b) continue;
-	else echo(PHP_EOL.print_r(array_reverse($b),true));
+	//else echo(PHP_EOL.print_r(array_reverse($b),true));
 
-	if($b['work']=='spellcast'){
-		if($b['from']=='player1') $p1ova = TRUE;
-		if($b['from']=='player2') $p2ova = TRUE;
-	}
-	if($p1ova && $p2ova) {
-		$p1ova = $p2ova = FALSE;
-		echo(PHP_EOL.'ROUND COMMIT'.PHP_EOL);
+	$rounds[$round_num][] = $b;
+	
+	if($b['work']!='spellcast') {}
+	else if($b['from']=='player1') $p1spell = $b['data'];
+	else if($b['from']=='player2') $p2spell = $b['data'];
+
+	if($p1spell && $p2spell) {
+		$message_commit = $Duel->message('system','ROUND','commit');
+		file_put_contents($filename, PHP_EOL.$message_commit, FILE_APPEND);
+		roundCommit($p1spell, $p2spell);
+		$p1spell = $p2spell = FALSE;$round_num++;
+		//echo(PHP_EOL.'ROUND COMMIT'.PHP_EOL);
 	}
 
 }
 
 echo("\r\n-------------------\r\n".$data);
+//echo(PHP_EOL.print_r($rounds,true));
 ?>

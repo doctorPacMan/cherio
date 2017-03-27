@@ -35,7 +35,8 @@ public function create($pid1, $pid2) {
 	$this->player2 = $pid2;
 	$this->logfile = 'duel_'.$pid1.'vs'.$pid2.'.log';
 
-	$lead = 'duel '.$this->player1.' vs '.$this->player2.' at '.date('d/m/y H:i:s',time());
+	$data = $this->player1.' vs '.$this->player2;
+	$lead = $this->message('system','START',$data);
 	$floc = $this->logsdir.$this->logfile;
 	$file = fopen($floc, 'w'); fwrite($file, $lead); fclose($file);
 
@@ -45,7 +46,7 @@ public function create($pid1, $pid2) {
 	$this->log($q);
 
 }
-public function message($from,$work,$data) {
+public function message($from,$work,$data='') {
 	$mktm = microtime(true);
 	$time = str_pad($mktm,15,'0');
 	$a = array(

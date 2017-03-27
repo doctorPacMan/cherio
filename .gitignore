@@ -1,5 +1,6 @@
 php/sse/sse.log
 lib/smarty/*
+tmp/duel/*
 tmp/session/*
 tmp/smarty_cache/*
 tmp/smarty_compile/*
