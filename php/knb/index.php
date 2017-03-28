@@ -1,10 +1,31 @@
 <?php
 require_once('duel.php');
-
 $Duel = new Duel();
-//$Duel->create(7,8);die();
 
-if(!empty($_GET)) die(require_once('ajax.php'));
+if(empty($Userdata)) die('Empty User');
+else $uid = $Userdata['id'];
+$userduel = $_DBR->getUserDuels($uid);
+$dueldata = empty($userduel) ? NULL : $userduel[0];
+$duelfile = empty($dueldata) ? NULL : TEMPDIR.'duel'.DIRECTORY_SEPARATOR.$dueldata['file'];
+
+//die('<pre>'.print_r($userduel,true).'</pre>');
+//die('<pre>'.file_exists($duelfile) ? 'restore' : 'create'.'</pre>');
+//die('<pre>'.print_r($dueldata,true).'</pre>');
+
+if(empty($dueldata)) die('Nothing '.$uid.' '.count($userduel));
+else $Duel->restoreByData($dueldata);
+die('<pre>'.print_r($Duel->readLogfile(),true).'</pre>');
+
+if(isset($_GET['reset'])) {
+	$Duel->create(7,8);
+	die($Duel->getGamestate());
+}
+else if(isset($_GET['read'])) {
+
+	die($Duel->getGamestate());
+
+}
+else if(!empty($_GET['spell'])) die(require_once('ajax.php'));
 
 $duel = NULL;
 $player1 = NULL;
@@ -25,6 +46,8 @@ if(!empty($Userdata)) {
 	}
 
 }
+
+//die('<pre>'.print_r($Duel->readGamestate(),true).'</pre>');
 
 $Smarty->assign('duel',$duel);
 $Smarty->assign('player1',$player1);

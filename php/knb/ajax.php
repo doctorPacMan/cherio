@@ -2,25 +2,19 @@
 setCorsHeaders('text/plain');
 //setCorsHeaders('application/json');
 
-function roundCommit($rdata) {
-	//echo(PHP_EOL.print_r($rdata,true));
-}
-//$actn = $_GET['action'];
-//echo("action=".$actn."\r\n");
-
 $uid = $Userdata['id'];
 $userduel = $_DBR->getUserDuels($uid);
 $dueldata = !empty($userduel) ? $userduel[0] : FALSE;
 $filename = TEMPDIR.'duel'.DIRECTORY_SEPARATOR.$dueldata['file'];
-$workfrom = $dueldata['player1']==$uid ? 'player1' : 'player2';
-echo(print_r($dueldata,true));
+
+//echo(print_r($dueldata,true));
 
 if(!empty($_GET['spell'])) {
-	$message_spell = $Duel->message($workfrom,'spellcast',$_GET['spell']);
-	file_put_contents($filename, PHP_EOL.$message_spell, FILE_APPEND);
-	echo(PHP_EOL.$message_spell);
+	$workfrom = $dueldata['player1']==$uid ? 'player1' : 'player2';
+	$_message = $Duel->message($workfrom,'spellcast',$_GET['spell']);
+	file_put_contents($filename, PHP_EOL.$_message, FILE_APPEND);
 }
-
+/*
 $file = fopen($filename,'r');
 $data = fread($file,filesize($filename));
 fclose($file);
@@ -41,16 +35,19 @@ for($i=1;$i<count($lines);$i++) {
 	else if($b['from']=='player1') $p1spell = $b['data'];
 	else if($b['from']=='player2') $p2spell = $b['data'];
 
-	if($p1spell && $p2spell) {
-		$message_commit = $Duel->message('system','ROUND','commit');
-		file_put_contents($filename, PHP_EOL.$message_commit, FILE_APPEND);
-		roundCommit($p1spell, $p2spell);
-		$p1spell = $p2spell = FALSE;$round_num++;
-		//echo(PHP_EOL.'ROUND COMMIT'.PHP_EOL);
-	}
+	if(!$p1spell || !$p2spell) continue;
 
+	$json = $Duel->getGamestate($round_num, $p1spell, $p2spell);
+	$gamestate = $Duel->message('system','ROUND',$json);
+
+	file_put_contents($filename, PHP_EOL.$gamestate, FILE_APPEND);
+	//roundCommit($p1spell, $p2spell);
+	$p1spell = $p2spell = FALSE;$round_num++;
+	//echo(PHP_EOL.'ROUND COMMIT'.PHP_EOL);
+	
 }
 
 echo("\r\n-------------------\r\n".$data);
 //echo(PHP_EOL.print_r($rounds,true));
+*/
 ?>
