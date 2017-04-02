@@ -1,5 +1,11 @@
 {include file='_intro.tpl'}
 
+
+{if !empty($duel)}{include file='duel/board.tpl'}
+{else}{include file='duel/create.tpl'}
+{/if}
+
+{*
 <div class="gameboard">
 	
 	<p>{$player1.alias}</p>
@@ -28,5 +34,5 @@
 	{/strip}
 
 </div>
-
+*}
 {include file='_outro.tpl'}

@@ -16,14 +16,6 @@ function __construct() {
 	$this->userdata = $userdata;
 	//die('<pre>user: '.print_r($this->userdata,true).'</pre>');
 }
-public function getUserDuels($uid) {
-	global $_PDO;
-
-	$query = "SELECT * FROM `duels` WHERE duels.player1=".$uid;
-	$query.= " OR duels.player2=".$uid;
-	$duels = $_PDO->query($query)->fetch();
-	return $duels ?: NULL;
-}
 public function getUserById($id) {
 	global $_PDO;
 
@@ -48,7 +40,8 @@ public function getUserByLogin($login) {
 	return $user ?: NULL;
 }
 public function initialize($user) {
-	$user['duel'] = 'duel10000111';
+	//$user['duel'] = 'duel10000111';
+	
 	return $user;
 }
 public function destroy() {
@@ -57,26 +50,26 @@ public function destroy() {
 }
 public function register($user) {
 	global $_PDO;
+	global $_DBR;
 
+	$uid = $user['id'];
 	$user['ua'] = $_SERVER['HTTP_USER_AGENT'];
 	$user['ip'] = $_SERVER['REMOTE_ADDR'];
+
+	$user['duels'] = $_DBR->getUserDuels($user['id']);
 
 	$hash = md5($user['id'] . $user['ip'] . $user['ua']);
 	$hash = base64_encode(pack('H*',sha1($hash.'258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
 	$user['hash'] = $hash;
 
-	$user['time'] = $time = date('Y-m-d H:i:s',time());
-	$id = $user['id'];
+	$time = date('Y-m-d H:i:s',time());
+	$user['time'] = $time;
 
 	//$query = "UPDATE `users` SET time=NOW()";
-	$query = "UPDATE `users` SET time=".$_PDO->quote($time);
+	$query = "UPDATE `users` SET `time`=".$_PDO->quote($time);
 	$query.= ", `hash`=".$_PDO->quote($hash);
-	$query.= " WHERE users.id=".$id;
+	$query.= " WHERE users.id=".$user['id'];
 	$_PDO->query($query);
-
-	//$query = "SELECT * FROM `users` WHERE users.id=".$id;
-	//$_user = $_PDO->query($query)->fetch();
-	//echo('<pre>'.print_r($_user,true).'</pre>');
 
 	setcookie('token',$hash,strtotime('+1 days'),'/',$_SERVER['HTTP_HOST']);
 

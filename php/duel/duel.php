@@ -92,7 +92,7 @@ public function restore($id) {
 }
 public function reset() {
 
-	$this->create($this->player1, $this->player2, false)
+	$this->create($this->player1, $this->player2, false);
 
 }
 private function getCurrentRound() {

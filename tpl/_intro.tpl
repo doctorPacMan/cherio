@@ -6,24 +6,46 @@
 	<title>Cherio</title>
     <meta name="description" content="Cherio">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="/css/css.css" />
+
+	<link rel="stylesheet" href="/fonts/font-awesome-4.7.0/css/font-awesome.min.css" />
+	<link rel="stylesheet" href="/css/_fonts.css" />
+	<link rel="stylesheet" href="/css/css.css?v={$smarty.now}" />
+	<link rel="stylesheet" href="/css/etc.css?v={$smarty.now}" />
 	
 	<script type="text/javascript" src="/js/utils.js"></script>
 	<script type="text/javascript" src="/js/ajax.js"></script>
 	<script type="text/javascript" src="/js/js.js"></script>
 
-	<link href="/assets/knb/css.css?v={$smarty.now}" rel="stylesheet" />
-	<script src="/assets/knb/js.js?v={$smarty.now}" type="text/javascript"></script>
-
+	{if empty($URL[0])}	
+	{else if $URL[0]=='knb'}	
+		<link href="/assets/knb/css.css?v={$smarty.now}" rel="stylesheet" />
+		<script src="/assets/knb/js.js?v={$smarty.now}" type="text/javascript"></script>
+	{else if $URL[0]=='duel'}	
+		<link href="/assets/duel/css.css?v={$smarty.now}" rel="stylesheet" />
+		<script src="/assets/duel/js.js?v={$smarty.now}" type="text/javascript"></script>
+	{/if}
 </head>
 <body>
-{if !empty($echo)}<pre class="phpecho">{$echo|@print_r:true}</pre>{/if}
+{if !empty($echo)}<pre class="phpecho" onclick="this.parentNode.removeChild(this)">{$echo|@print_r:true}</pre>{/if}
 <div>
+	{strip}
 	<header>
-		<button>connect</button>
-		{if empty($User)}<a href="/auth/">Login</a>
-		{else}
-			User: {$User.login} <a href="/auth/?logout&amp;back={'/tick/'|escape:'url'}">Logout</a>
+		<a href="/auth/">
+		{if empty($User)}<i class="fa fa-lock"></i> Login
+		{else}<i class="fa fa-user-circle-o"></i> {$User.login}
 		{/if}
-	</header>
+		</a>
 
+		{if !empty($User.duel)}
+		<a href="/duel/"><i class="fa fa-hand-spock-o"></i>Duel</a>
+		{/if}
+		
+		<a><i class="fa fa-power-off"></i>Connect</a>
+
+		<a href="/html/"><i class="fa fa-code"></i>HTML</a>
+
+		
+	</header>
+	{/strip}
+
+	<div class="content">

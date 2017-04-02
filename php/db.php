@@ -19,7 +19,7 @@ private function queryFetchAll($query) {
 public function getUserDuels($uid) {
 	$query = "SELECT * FROM `duels` WHERE duels.player1=".$uid." OR duels.player2=".$uid;
 	$duels = $this->queryFetchAll($query);
-	return $duels ?: NULL;
+	return $duels ?: array();
 }
 public function getUserById($uid) {
 	$query = "SELECT * FROM `users` WHERE users.id=".$uid;

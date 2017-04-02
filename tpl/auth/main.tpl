@@ -5,6 +5,7 @@
 {/if}
 
 {if !empty($User)}
+	<h3>{$User.login} <a href="./?logout">logout</a></h3>
 	<pre>{$User|@print_r:true}</pre>
 {else}
 	
@@ -13,19 +14,19 @@
 		<input type="hidden" name="action" value="login" />
 		<input name="username" value="{$smarty.get.username|default:''}" type="text" placeholder="Логин" />
 		<input name="userpass" value="{$smarty.get.userpass|default:''}" type="password" placeholder="Пароль" />
-		<input type="submit" value="Вход" />
+		<input class="btn" type="submit" value="Вход" />
 	</form>
 	<form action="./" name="regah" method="post">
 		<input type="hidden" name="action" value="regah" />
 		<input name="username" value="{$smarty.post.username|default:''}" type="text" placeholder="Придумай логин" />
 		<input name="userpass" value="{$smarty.post.userpass|default:''}" type="password" placeholder="Придумай пароль" />
-		<input type="submit" value="Регистрация" />
+		<input class="btn" type="submit" value="Регистрация" />
 	</form>
 	</div>
 
 {/if}
 
-{if !empty($users)}
+{if !empty($users) && empty($User)}
 	<h1>Все пользователи:</h1>
 	<ul class="reglog-list">
 	{foreach from=$users item='v'}

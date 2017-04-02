@@ -12,6 +12,9 @@ $duelfile = empty($dueldata) ? NULL : TEMPDIR.'duel'.DIRECTORY_SEPARATOR.$duelda
 //die('<pre>'.file_exists($duelfile) ? 'restore' : 'create'.'</pre>');
 //die('<pre>'.print_r($dueldata,true).'</pre>');
 
+//$Duel->create(5,7);die();
+
+
 if(empty($dueldata)) die('Nothing '.$uid.' '.count($userduel));
 else $Duel->restoreByData($dueldata);
 die('<pre>'.print_r($Duel->readLogfile(),true).'</pre>');

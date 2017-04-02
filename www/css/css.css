@@ -1,24 +1,98 @@
 @import url('_fonts.css');
+@import url('_anime.css');
 @import url('sse.css');
 html, body {
 	margin: 0;
 	padding: 0;
 	width: 100%;
 	height: 100%;
+}
+html {font: 16px/22px 'Arial'}
+body {
 	overflow: hidden;
 	position: relative;
-	background: white;
-	color: black;
+	background: black;
+	color: whitesmoke;
+	font-size: 14px;
+	line-height: 20px;
+	font-family: 'Noto Sans', sans-serif;
 }
-body {
-	font: .75em/1.25 'Arial';
+body > div {
+	outline: 1px solid dodgerblue;
+	position: absolute;
+	left:20px;right:20px;
+	top:20px;bottom:20px;
+	overflow: hidden;
+	background: rgb(24,24,24);
+	background-image: repeating-linear-gradient(0deg,
+		transparent 0px,
+		transparent 2px,
+		rgba(255,255,255,.1) 2px,
+		rgba(255,255,255,.1) 4px
+	);
 }
+body > div > div {
+	z-index: 1;
+	position: absolute;
+	left:0px;right:0px;
+	bottom:0px;top:0px;
+	padding: 24px 24px 24px 74px;
+	overflow: hidden;
+	overflow-y: scroll;
+}
+body > div > header {
+	position: absolute;
+	top:0px;bottom:0px;
+	left: 0px;
+	z-index: 2;
+	width: 238px;
+	padding: 0 0 0 1px;
+	background: rgba(39,46,59,1);
+	color: white;
+	border-right: 1px solid rgba(255,255,255,.25);
+	box-shadow: 3px 4px 6px 0 rgba(0, 0, 0, 0.5);
+	transition: left .25s ease .25s;
+}
+body > div > header {left: -188px}
+body > div > header:hover {left:0}
+header > a,
+header > button {
+	box-sizing: border-box;
+	background: transparent;
+	border-right: 1px solid rgba(255,255,255,.25);
+	display: block;
+	width: 100%;
+	font: inherit;
+	color: inherit;
+	border: 1px solid rgba(255,255,255,.25);
+	border-width: 0 0 1px;
+	height: 48px;
+	line-height: 48px;
+	text-align:left;
+	text-decoration: none;
+	padding: 0 0 0 12px;
+}
+header > a > i.fa {
+	float: right;
+	font-size: 24px;
+	height: 48px;
+	width: 48px;
+	line-height: 48px;
+	margin: 0px 0px 0 0px;
+	text-align: center;
+	color: darkgray;
+	background: grayss;
+	color: darkorange;
+}
+header > a > i.fa-user-circle-o {}
+
 pre {
 	font: 14px/16px monospace;
 	font-family: 'Consolas', 'Courier New', monospace;
 	background: lightyellow;
 	padding: 6px 8px;
 	margin: 0;
+	color: black;
 }
 pre.phpecho {
 	position: relative;
@@ -26,17 +100,6 @@ pre.phpecho {
 	box-shadow: inset 0 0 0 1px black;
 	background: rgb(0,75,120);
 	color: white;
-}
-body > div {
-	outline: 1px solid dodgerblue;
-	background: white;
-	color: rgb(53,53,53);
-	position: absolute;
-	left:0px;right:0px;
-	top:0px;bottom:0px;
-	overflow-x: hidden;
-	overflow-y: scroll;
-	margin: 0px;
 }
 body > div.scrollhide {
 	right: -25px;
@@ -46,22 +109,21 @@ body > div.scrollhide {
 form {
 	margin: 12px;
 }
+/*
 button,
 input[type="submit"],
 input[type="button"] {
 	display: inline-block;
 	cursor: pointer;
-	font: 14px/27px 'Verdana';
-	padding: 0 1em;
-	border: 0;
+	font: 14px 'Verdana';
+	padding: 0 12px;
+	border: 1px solid gray;
 	margin: 0;
 	outline: 0;
-	height: 36px;
-	border-radius: 3px;
+	height: 30px;
+	border-radius: 0px;
 	background: whitesmoke;
-	border: 1px solid rgba(0,0,0,.1);
-	box-shadow: 0 1px 2px rgba(120,120,120,.2);
-	color: rgb(120,120,120);
+	color: black;
 }
 button:hover,
 input[type="submit"]:hover,
@@ -110,7 +172,7 @@ input[type="password"] {
 	padding: 0px .5em;
 	box-shadow: inset 0 0 0 1px darkcyan;
 }
-
+*/
 .reglog-eror {
 	margin: 12px 12px;
 	background: rgba(255,0,0,.2);
@@ -151,26 +213,20 @@ input[type="password"] {
 .reglog-list a:hover {text-decoration: underline}
 
 
+a:link,
+a:visited {
+	color: rgb(0,175,255);
+	text-decoration: underline;
+}
+a:hover {
+	color: rgb(120,215,255);
+}
+
 h1,h2,h3,h4,h5,h6 {
-	margin: 12px;
-	font: normal normal 100% 'Noto Sans';
+	margin: 0 0 .75em;
+	font: inherit;
 }
 h1 {font-size: 200%}
-
-header {
-	height: 36px;
-	padding: 0 12px;
-	background: dodgerblue;
-	color: white;
-	font: 135%/36px Verdana;
-}
-header > button {
-	position: relative;
-	color: white;
-	left: 12px;
-	float: right;
-	height: 100%;
-	border: 0;
-	border-left: 1px solid white;
-	background: transparent;
-}
+h2 {font-size: 180%}
+h3 {font-size: 150%}
+h4 {font-size: 120%}

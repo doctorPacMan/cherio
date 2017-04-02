@@ -1,0 +1,75 @@
+.userslist,
+.userslist > li {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	width: 360px;
+}
+.userslist > li {
+	font-size: 16px;
+	line-height: 36px;
+	padding: 3px;
+}
+.userslist > li .btn {
+	float: right;
+}
+.userslist > li:hover {
+	outline: 1px solid red;
+}
+
+
+
+.gameboard {
+	background: black;
+	position: relative;
+	width: 640px;
+	height: 480px;
+	border: 1px solid darkgray;
+	margin: 24px auto;
+}
+.gameboard > big {
+	text-align: center;
+	display: block;
+	margin: 12px auto 0;
+	color: yellow;
+	font-size: 200%;
+}
+.gameboard button.spl {
+	width: 64px;
+	height: 64px;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	outline: 0;
+	background: transparent;
+	color: cyan;
+	box-shadow: inset 0 0 0 3px cyan;
+	border-radius: 50%;
+}
+.gameboard button.spl:before {
+	content: 'X';
+    font: 36px/48px FontAwesome;
+}
+.gameboard button.spl-rock:before {content: "\f255"}
+.gameboard button.spl-scissors:before {content: "\f257"}
+.gameboard button.spl-paper:before {content: "\f256"}
+.gameboard button.spl-spock:before {content: "\f259"}
+.gameboard button.spl-lizard:before {content: "\f258"}
+
+.dueler {
+	text-align: center;
+	width: 200px;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+.dueler + .dueler {
+	left:auto;right: 0;
+}
+.dueler > p {
+	margin: 0;
+	text-align: center;
+}
+.dueler-you {
+	background: gray;
+}
