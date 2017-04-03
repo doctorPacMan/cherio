@@ -16,6 +16,11 @@ private function queryFetch($query) {
 private function queryFetchAll($query) {
 	return $this->PDO->query($query)->fetchAll();
 }
+public function getDuelsList() {
+	$query = "SELECT * FROM `duels`";
+	$duels = $this->queryFetchAll($query);
+	return $duels ?: array();
+}
 public function getUserDuels($uid) {
 	$query = "SELECT * FROM `duels` WHERE duels.player1=".$uid." OR duels.player2=".$uid;
 	$duels = $this->queryFetchAll($query);

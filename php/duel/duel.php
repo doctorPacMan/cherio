@@ -14,7 +14,6 @@ private $_state = array(
 );
 
 function __construct() {
-
 	//$this->id = 0;
 	$this->_log = array();
 	//$this->create();
