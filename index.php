@@ -1,6 +1,7 @@
 <?php
 define('BASEDIR',__DIR__.DIRECTORY_SEPARATOR);
 define('TEMPDIR',BASEDIR.'tmp'.DIRECTORY_SEPARATOR);
+define('DUELDIR',TEMPDIR.'duel'.DIRECTORY_SEPARATOR);
 require_once(BASEDIR.'php/utils.php');
 require_once(BASEDIR.'etc/init.php');
 

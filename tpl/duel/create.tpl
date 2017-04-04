@@ -7,7 +7,7 @@
 <li>
 	{$v.id}
 	<b>{$v.login}</b>
-	<a class="btn"{if $v.id!=$User.id} href="./?create&uid={$v.id}"{/if}>к барьеру!</a>
+	<a class="btn"{if $v.id!=$User.id} href="./list/?create={$v.id}"{/if}>к барьеру!</a>
 </li>
 {/foreach}
 </ul>

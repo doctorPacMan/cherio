@@ -2,7 +2,7 @@
 class Duel {
 public $id;
 public $data;
-private $logsdir = TEMPDIR.'duel'.DIRECTORY_SEPARATOR;
+private $logsdir = DUELDIR;
 private $logfile;
 public $logdata;
 public $player1;

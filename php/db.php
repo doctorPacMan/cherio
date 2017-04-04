@@ -82,6 +82,12 @@ public function insertNewUser($login, $pass) {
 	$bdata = $this->getUserByLogin($login);
 	return $bdata;
 }
+public function deleteDuelById($did) {
+	$query = "DELETE FROM `duels` WHERE duels.id=".$did;
+	$pdost = $this->query($query);
+	$error = $pdost->errorCode();
+	return $error===NULL ? FALSE : ($error=='00000');
+}
 public function getDuelById($did) {
 	$query = "SELECT * FROM `duels` WHERE duels.id=".$did;
 	$bdata = $this->queryFetch($query);

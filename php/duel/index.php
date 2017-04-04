@@ -21,10 +21,7 @@ $spells = array(
 //$duel_id = $Userdata['duel']['id'];
 //die("<pre>".print_r($URL_PARAMS,true)."</pre>");
 
-if($URL_PARAMS[1]=='list') {
-	$Smarty->assign('duels',$_DBR->getDuelsList());
-	$Smarty->display('duel/list.tpl');
-}
+if($URL_PARAMS[1]=='list') die(require_once('list.php'));
 else if(isset($_GET['create'])) {
 	
 	$create_errors = array();
