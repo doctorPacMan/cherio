@@ -38,7 +38,7 @@ else if($auth_action==='login') {
 }
 else {}
 
-$Smarty->assign('users',$_DBR->query("SELECT * FROM `users`")->fetchAll());
+$Smarty->assign('users',$_DBR->getAllUsers());
 $Smarty->assign('auth_error',$auth_error);
 $Smarty->display('auth/main.tpl');
 ?>

@@ -53,7 +53,7 @@ body > div > header {
 	box-shadow: 3px 4px 6px 0 rgba(0, 0, 0, 0.5);
 	transition: left .25s ease .25s;
 }
-body > div > header {left: -188px}
+body > div > header {left: -192px}
 body > div > header:hover {left:0}
 header > a,
 header > button {

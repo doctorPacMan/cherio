@@ -2,7 +2,7 @@
 
 {if !empty($rzlt)}<pre>{$rzlt|@print_r:true}</pre><br />{/if}
 
-<h1>Duel list</h1>
+<h1>Duel list <a href="../init/">init</a></h1>
 
 <table class="duelslist">
 <thead>

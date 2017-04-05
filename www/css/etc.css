@@ -1,3 +1,20 @@
+table,thead,tfoot,tbody,tr,th,td {
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+table {
+	border-collapse: collapse;
+	min-width: 360px;
+}
+th,td {
+	border: 1px solid gray;
+	font-weight: normal;
+	text-align: left;
+	padding: 3px 6px;
+	vertical-align: middle;
+}
+
 .divover {
 	background: rgb(39,46,59);
 	border: 1px solid black;

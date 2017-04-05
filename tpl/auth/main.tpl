@@ -27,12 +27,21 @@
 {/if}
 
 {if !empty($users) && empty($User)}
-	<h1>Все пользователи:</h1>
-	<ul class="reglog-list">
+	<br><h3>Accounts:</h3>
+	<table>
+	<tr>
+		<th width="30">id</th>
+		<th>login</th>
+		<th width="60"></th>
+	</tr>
 	{foreach from=$users item='v'}
-	<li><a href="./?username={$v.login|escape:'url'}&amp;userpass={$v.pass|escape:'url'}">[{$v.id}] {$v.login} @{$v.pass}</a></li>
+	<tr>
+		<td>{$v.id}</td>
+		<td>{$v.login}</td>
+		<td><a class="btn" href="./?username={$v.login|escape:'url'}&amp;userpass={$v.pass|escape:'url'}">login</a></td>
+	</tr>
 	{/foreach}
-	</ul>
+	</table>
 {/if}
 
 {include file='_outro.tpl'}

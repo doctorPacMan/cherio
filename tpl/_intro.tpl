@@ -30,21 +30,22 @@
 <div>
 	{strip}
 	<header>
-		<a href="/auth/">
-		{if empty($User)}<i class="fa fa-lock"></i> Login
-		{else}<i class="fa fa-user-circle-o"></i> {$User.login}
-		{/if}
-		</a>
+	{if empty($User)}
+		<a href="/auth/"><i class="fa fa-lock"></i> Login</a>
+	{else}
+		<a href="/auth/"><i class="fa fa-user-circle-o"></i> {$User.login}</a>
+
+		{*<a><i class="fa fa-power-off"></i>Connect</a>*}
 
 		{if !empty($User.duel)}
 		<a href="/duel/"><i class="fa fa-hand-spock-o"></i>Duel</a>
 		{/if}
 		
-		<a><i class="fa fa-power-off"></i>Connect</a>
+		<a href="/duel/list/"><i class="fa fa-handshake-o"></i>Duels list</a>
 
 		<a href="/html/"><i class="fa fa-code"></i>HTML</a>
-
-		
+	
+	{/if}
 	</header>
 	{/strip}
 

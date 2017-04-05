@@ -31,6 +31,11 @@ public function getUserById($uid) {
 	$user = $this->queryFetch($query);
 	return $user ?: NULL;
 }
+public function getAllUsers() {
+	$query = "SELECT * FROM `users`";
+	$users = $this->queryFetchAll($query);
+	return $users ?: NULL;
+}
 public function getUserByToken($token) {
 	$query_token = $this->quote($token);
 	$query = "SELECT * FROM `users` WHERE users.hash=".$query_token;
