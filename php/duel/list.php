@@ -57,10 +57,12 @@ else if(!empty($_GET['reset'])) {
 		$uid2 = $duel['player2'];
 
 		$res_rm = unlink($file);
-		if($res_rm) $res_db = $_DBR->deleteDuelById($id);
 
-		//die("err ".$pdostm->errorCode()."<");
-		$Duel->create($uid1, $uid2);
+		$db_rewrite = false;
+		if($res_rm) {
+			if($db_rewrite) $res_db = $_DBR->deleteDuelById($id);
+			$Duel->create($uid1, $uid2, $db_rewrite);
+		}
 
 		$rzlt.= PHP_EOL.'delete: '.$res_rm.' & '.$res_db;
 		$rzlt.= PHP_EOL.'create: '.PHP_EOL.$Duel->logdata;

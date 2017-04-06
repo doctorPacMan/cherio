@@ -5,12 +5,12 @@ $create_errors = array();
 
 if(isset($_GET['id'])) {
 
-	$uid1 = $Userdata['id'];
+	$uid1 = intval($Userdata['id']);
 	$player1 = $_DBR->getUserById($uid1);
 	$duels1 = $_DBR->getUserDuels($uid1);
 	$count1 = count($duels1);
 
-	$uid2 = $_GET['id'];
+	$uid2 = intval($_GET['id']);
 	$player2 = $_DBR->getUserById($uid2);
 	$duels2 = $_DBR->getUserDuels($uid2);
 	$count2 = count($duels2);
@@ -23,8 +23,8 @@ if(isset($_GET['id'])) {
 		$create_result = FALSE;
 	}
 	else {
-		$Duel->create($uid1,$uid2);
-		$create_result = $Duel->logdata;
+		$duel = $Duel->create($uid1,$uid2);
+		header('Location: ./?success='.$duel['id'], true, 303);
 	}
 
 	//echo("<br>".$uid1.' ('.$count1.') vs '.$uid2.' ('.$count2.')');

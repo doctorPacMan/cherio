@@ -120,7 +120,8 @@ public function create($pid1, $pid2, $dbr=true) {
 
 	$this->logdata = file_get_contents($floc);
 
-	if($dbr) $_DBR->insertNewDuel($this->player1, $this->player2, $this->logfile);
+	$bdata = $_DBR->insertNewDuel($this->player1, $this->player2, $this->logfile);
+	return $bdata;
 }
 public function getGamestate() {
 

@@ -1,4 +1,13 @@
+{include file='_intro.tpl'}
+
+{if !empty($duel_data)}<pre>{$duel_data|@print_r:true}</pre>{/if}
+
 <a class="btn">Restart</a>
+
+Player1:
+Player2:
+
+{*
 <div class="gameboard">
 	
 	<big>Round {$round.num}</big>
@@ -22,3 +31,5 @@
 	{/strip}
 
 </div>
+*}
+{include file='_outro.tpl'}

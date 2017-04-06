@@ -106,7 +106,18 @@ public function insertNewDuel($player1, $player2, $file) {
 	$query.="(`player1`, `player2`, `file`) VALUES ";
 	$query.="(".$query_pid1.", ".$query_pid2.", ".$query_file.")";
 	$this->query($query);
-	return $query;
+	
+	$query = "SELECT * FROM `duels`";
+	$query.= " WHERE duels.player1=".$query_pid1;
+	$query.= " AND duels.player2=".$query_pid2;
+	$_duel = $this->queryFetch($query);
+	
+	$query = "UPDATE `users` SET duel=".$this->quote($_duel['id']);
+	$query.= " WHERE users.id=".$query_pid1;
+	$query.= " OR users.id=".$query_pid2;
+	$this->query($query);
+
+	return $_duel ?: NULL;
 }
 }
 ?>

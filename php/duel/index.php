@@ -9,13 +9,6 @@ $round = array(
 	'player2_turn' => TRUE,
 	'num' => 3
 );
-$spells = array(
-	array('id' => 'rock','name' => 'Камень'),
-	array('id' => 'scissors','name' => 'Ножницы'),
-	array('id' => 'paper','name' => 'Бумага'),
-	array('id' => 'lizard','name' => 'Ящерица'),
-	array('id' => 'spock','name' => 'Спок')
-);
 
 
 //$duel_id = $Userdata['duel']['id'];
@@ -23,6 +16,7 @@ $spells = array(
 
 if($URL_PARAMS[1]=='list') die(require_once('list.php'));
 else if($URL_PARAMS[1]=='init') die(require_once('init.php'));
+else if($URL_PARAMS[1]=='play') die(require_once('play.php'));
 else if(isset($_GET['create'])) {
 	
 	$create_errors = array();
