@@ -1,4 +1,9 @@
 <?php
+function redirectLocation($url) {
+	header('Location: '.$url, true, 303);
+	die();
+}
+
 function rootDomainIs($domn) {
     return (substr($_SERVER['HTTP_HOST'],-strlen($domn))==$domn);
 }

@@ -2,12 +2,23 @@
 
 {if !empty($rzlt)}<pre>{$rzlt|@print_r:true}</pre><br />{/if}
 
-<h1>Duel list <a href="../init/">init</a></h1>
+{if isset($smarty.get.reset_success)}
+<div class="message-success">Duel reset success</div>
+{/if}
+
+{if !empty($smarty.get.delete_success)}<div class="message-success">Duel deleted</div>
+{elseif !isset($smarty.get.delete_failure)}
+{elseif $smarty.get.file=='failure'}<div class="message-failure">Delete failure: fail</div>
+{elseif $smarty.get.base=='failure'}<div class="message-failure">Delete failure: base</div>
+{/if}
+
+<h3>Duel list</h3>
 
 <table class="duelslist">
 <thead>
 <tr>
 	<th width="30">id</th>
+	<th width="70">init_at</th>
 	<th width="60">player1</th>
 	<th width="60">player2</th>
 	<th>actions</th>
@@ -15,8 +26,9 @@
 </thead>
 <tbody>
 {foreach from=$duels item='v'}
-<tr>
+<tr{if !empty($User) && $User.duel==$v.id} class="hlgt"{/if}>
 	<td>{$v.id}</td>
+	<td>{$v.init_at|date_format:'%D %T'}</td>
 	<td>{$v.player1}</td>
 	<td>{$v.player2}</td>
 	<td>

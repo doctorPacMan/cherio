@@ -32,12 +32,14 @@
 	<tr>
 		<th width="30">id</th>
 		<th>login</th>
+		<th>duel</th>
 		<th width="60"></th>
 	</tr>
 	{foreach from=$users item='v'}
 	<tr>
 		<td>{$v.id}</td>
 		<td>{$v.login}</td>
+		<td>{if !empty($v.duel)}{$v.duel}{/if}</td>
 		<td><a class="btn" href="./?username={$v.login|escape:'url'}&amp;userpass={$v.pass|escape:'url'}">login</a></td>
 	</tr>
 	{/foreach}

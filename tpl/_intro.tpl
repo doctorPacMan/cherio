@@ -39,6 +39,8 @@
 
 		{if !empty($User.duel)}
 		<a href="/duel/"><i class="fa fa-hand-spock-o"></i>Duel</a>
+		{else}
+		<a href="/duel/init/"><i class="fa fa-hand-spock-o"></i>Init duel</a>
 		{/if}
 		
 		<a href="/duel/list/"><i class="fa fa-handshake-o"></i>Duels list</a>

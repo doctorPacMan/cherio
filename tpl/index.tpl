@@ -1,5 +1,9 @@
 {include file='_intro.tpl'}
 
+<div class="message-success">Message SUCCESS</div>
+<div class="message-failure">Message FAILURE</div>
+<div class="message-warning">Message WARNING</div>
+
 <a class="btn">Link</a>
 <button class="btn">Button</button>
 <input class="btn" type="button" value="Button" />

@@ -87,11 +87,35 @@ public function insertNewUser($login, $pass) {
 	$bdata = $this->getUserByLogin($login);
 	return $bdata;
 }
-public function deleteDuelById($did) {
-	$query = "DELETE FROM `duels` WHERE duels.id=".$did;
+public function updateDuelInitTime($did, $time=NULL) {
+
+	$time = $time ? strtotime($time) : time();
+	$query_time = $this->quote(date('Y-m-d H:i:s',$time));
+
+	$query = "UPDATE `duels` SET init_at=".$query_time;
+	$query.= " WHERE duels.id=".$this->quote($did);
 	$pdost = $this->query($query);
 	$error = $pdost->errorCode();
-	return $error===NULL ? FALSE : ($error=='00000');
+	if($error!='00000') return FALSE;
+
+	return $time;
+}
+public function deleteDuelById($did) {
+	
+	//$duel = $this->getDuelById($did);
+	$query_did = $this->quote($did);
+
+	$query = "DELETE FROM `duels` WHERE duels.id=".$query_did;
+	$pdost = $this->query($query);
+	$error = $pdost->errorCode();
+	if($error!='00000') return FALSE;
+
+	$query = "UPDATE `users` SET duel=0 WHERE users.duel=".$query_did;
+	$pdost = $this->query($query);
+	$error = $pdost->errorCode();
+	if($error!='00000') return FALSE;
+
+	return TRUE;
 }
 public function getDuelById($did) {
 	$query = "SELECT * FROM `duels` WHERE duels.id=".$did;

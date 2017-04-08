@@ -2,6 +2,7 @@
 class Duel {
 public $id;
 public $data;
+private $time;
 private $logsdir = DUELDIR;
 private $logfile;
 public $logdata;
@@ -20,12 +21,14 @@ function __construct() {
 }
 public function restoreByData($data) {
 	$this->data = $data;
+	$this->id = $data['id'];
 	$this->logfile = $data['file'];
 	$this->player1 = $data['player1'];
 	$this->player2 = $data['player2'];
+	$this->time = strtotime($data['init_at']);
+	$this->filesrc = realpath(DUELDIR.$data['file']);
 
-	$floc = $this->logsdir.$this->logfile;
-	$this->logdata = file_get_contents($floc);
+	$this->logdata = file_get_contents($this->filesrc);
 	$this->readLogfile();
 }
 public function readLogfile() {
@@ -89,10 +92,57 @@ public function restore($id) {
 	$data = $_DBR->getDuelById($id);
 	$this->restoreByData($data);
 }
-public function reset() {
+private function commitGameStart() {
+	
+	$data = $this->player1.' vs '.$this->player2.' at '.date('y/m/d H:i:s',$this->time);
+	$start = $this->message('system','START',$data);
+	$data = $this->getGamestate();
+	$round = $this->message('system','ROUND',$data);
 
-	$this->create($this->player1, $this->player2, false);
+	$newdata = $start.PHP_EOL.$round;
+	file_put_contents($this->filesrc, $newdata);
 
+	return $newdata;
+}
+public function delete($id) {
+	global $_DBR;
+
+	$res = 'DESTROY ';
+	$failure = FALSE;
+
+	$this->restore($id);
+	$res.= $this->id.' '.$this->player1.'vs'.$this->player2.'file: '.$this->filesrc;
+	$res.= ' time: '.date('Y-m-d H:i:s',$this->time);
+
+	$res_rm = @unlink($this->filesrc);
+	if($res_rm===FALSE) $failure = 'file unlink failure';
+	$res_db = $_DBR->deleteDuelById($id);
+	if($res_db===FALSE) $failure = 'database rm failure';
+	
+	return $failure ?: TRUE;
+}
+public function reset($id) {
+	global $_DBR;
+
+	$res = 'RESET ';
+	$failure = FALSE;
+
+	$this->restore($id);
+	$res.= $this->id.' '.$this->player1.'vs'.$this->player2.'file: '.$this->filesrc;
+	$res.= ' time: '.date('Y-m-d H:i:s',$this->time);
+
+	$init_time = $_DBR->updateDuelInitTime($id);
+	$res.= PHP_EOL.'update init_at '.($init_time?date('Y-m-d H:i:s',$init_time):'failure');
+	if($init_time) $this->time = $init_time;
+	else $failure = 'init time update failure';
+	
+	// rewrite logfile
+	$res.= PHP_EOL.'--- old ---'.PHP_EOL.$this->logdata;
+	$this->commitGameStart();
+	$this->logdata = file_get_contents($this->filesrc);
+	$res.= PHP_EOL.'--- new ---'.PHP_EOL.$this->logdata;
+	
+	return $failure ?: TRUE;
 }
 private function getCurrentRound() {
 

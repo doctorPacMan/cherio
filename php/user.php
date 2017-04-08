@@ -76,6 +76,9 @@ public function register($user) {
 	$_SESSION['user'] = $user;
 	return $this->initialize($user);
 }
+public function updateData($field, $data) {
+	$_SESSION['user'][$field] = $data;
+}
 public function insertNewUser($login, $pass) {
 	global $_DBR;
 	$_DBR->insertNewUser($login, $pass);

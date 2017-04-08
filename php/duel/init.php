@@ -24,6 +24,7 @@ if(isset($_GET['id'])) {
 	}
 	else {
 		$duel = $Duel->create($uid1,$uid2);
+		$User->updateData('duel',$duel['id']);
 		header('Location: ./?success='.$duel['id'], true, 303);
 	}
 

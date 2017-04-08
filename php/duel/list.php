@@ -25,48 +25,20 @@ if(!empty($_GET['create'])) {
 }
 else if(!empty($_GET['delete'])) {
 
-	$reject = FALSE;
-	
 	$id = $_GET['delete'];
-	$rzlt = 'Delete #'.$id.' result:';
-	$duel = $_DBR->getDuelById($id);
-	if(!$duel) $rzlt.= 'duel not found';
-	else {
-
-		$file = DUELDIR.$duel['file'];
-		//$uid1 = $duel['player1'];
-		//$uid2 = $duel['player2'];
-
-		$res_rm = @unlink($file);
-		$res_db = $_DBR->deleteDuelById($id);
-
-		$rzlt.= ' unlink>'.($res_rm?'success':'failure');
-		$rzlt.= ' dtbase>'.($res_db?'success':'failure');
-	}
+	$res = $Duel->delete($id);
+	if($res===TRUE) $User->updateData('duel',0);
+	
+	if($res===TRUE) redirectLocation('./?delete_success='.$id);
+	else $rzlt = 'Delete #'.$id.' failure: '.$res;
 }
 else if(!empty($_GET['reset'])) {
 
 	$id = $_GET['reset'];
-	$rzlt = 'Reset #'.$id.' result: ';
-	$duel = $_DBR->getDuelById($id);
+	$res = $Duel->reset($id);
+	if($res===TRUE) redirectLocation('./?reset_success='.$id);
+	else $rzlt = 'Reset #'.$id.' failure: '.$res;
 
-	if(!$duel) $rzlt.= 'duel not found';
-	else {
-		$file = DUELDIR.$duel['file'];
-		$uid1 = $duel['player1'];
-		$uid2 = $duel['player2'];
-
-		$res_rm = unlink($file);
-
-		$db_rewrite = false;
-		if($res_rm) {
-			if($db_rewrite) $res_db = $_DBR->deleteDuelById($id);
-			$Duel->create($uid1, $uid2, $db_rewrite);
-		}
-
-		$rzlt.= PHP_EOL.'delete: '.$res_rm.' & '.$res_db;
-		$rzlt.= PHP_EOL.'create: '.PHP_EOL.$Duel->logdata;
-	}
 }
 
 $Smarty->assign('duels',$_DBR->getDuelsList());
