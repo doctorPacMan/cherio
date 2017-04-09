@@ -2,18 +2,6 @@
 require_once('duel.php');
 $Duel = new Duel();
 
-$round = array(
-	'player1_hp' => 95,
-	'player2_hp' => 50,
-	'player1_turn' => FALSE,
-	'player2_turn' => TRUE,
-	'num' => 3
-);
-
-
-//$duel_id = $Userdata['duel']['id'];
-//die("<pre>".print_r($URL_PARAMS,true)."</pre>");
-
 $action = !empty($URL_PARAMS[1]) ? $URL_PARAMS[1] : 'main';
 if($action=='list') die(require_once('list.php'));
 else if($action=='init') die(require_once('init.php'));

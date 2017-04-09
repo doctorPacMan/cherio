@@ -1,5 +1,4 @@
 <?php
-
 $spells = array(
 	array('id' => 'rock','name' => 'Камень'),
 	array('id' => 'scissors','name' => 'Ножницы'),
@@ -7,7 +6,6 @@ $spells = array(
 	array('id' => 'lizard','name' => 'Ящерица'),
 	array('id' => 'spock','name' => 'Спок')
 );
-
 $round = array(
 	'player1_hp' => 95,
 	'player2_hp' => 50,
@@ -16,7 +14,16 @@ $round = array(
 	'num' => 3
 );
 
-	$duel_data = $duel_id = 'id: '.$Userdata['duel'];
+$duel_id = $Userdata['duel']; 
+$duel_db = $_DBR->getDuelById($duel_id);
+$player1 = $_DBR->getUserById($duel_db['player1']);
+$player2 = $_DBR->getUserById($duel_db['player2']);
+
+$Duel->restoreByData($duel_db);
+$duel_text = $Duel->logdata;
+$duel_data = $Duel->data;
+
+	//$duel_data = $duel_id = 'id: '.$Userdata['duel'];
 /*
 	$duel_db = $_DBR->getDuelById($duel_id);
 	$player1 = $_DBR->getUserById($duel_db['player1']);
@@ -30,5 +37,6 @@ $round = array(
 	$Smarty->assign('duel',$duel_db);
 */
 $Smarty->assign('duel_data',$duel_data);
+$Smarty->assign('duel_text',$duel_text);
 $Smarty->display('duel/play.tpl');
 ?>

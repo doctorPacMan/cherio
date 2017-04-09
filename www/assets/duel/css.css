@@ -1,3 +1,15 @@
+.dueldata {
+	position: absolute;
+	right: 0;top: 0;
+}
+.dueltext {
+	width: 600px;
+	height: 600px;
+	overflow: hidden;
+	overflow-y: scroll;
+	position: absolute;
+	right: 0;bottom: 0;
+}
 .gameboard {
 	background: black;
 	position: relative;

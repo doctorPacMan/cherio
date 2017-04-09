@@ -1,6 +1,9 @@
 {include file='_intro.tpl'}
 
-{if !empty($duel_data)}<pre>{$duel_data|@print_r:true}</pre>{/if}
+{if !empty($duel_data)}<pre class="dueldata">{$duel_data|@print_r:true}</pre>{/if}
+
+{if !empty($duel_text)}<textarea class="dueltext">{$duel_text|@print_r:true}</textarea>{/if}
+
 
 <a class="btn">Restart</a>
 
