@@ -1,6 +1,6 @@
 {include file='_intro.tpl'}
 
-<div class="message-success">Message SUCCESS</div>
+<div class="message-success mask-grid">Message SUCCESS</div>
 <div class="message-failure">Message FAILURE</div>
 <div class="message-warning">Message WARNING</div>
 
