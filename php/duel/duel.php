@@ -144,12 +144,6 @@ public function reset($id) {
 	
 	return $failure ?: TRUE;
 }
-private function getCurrentRound() {
-
-
-	//file_get_contents($floc)
-	return 'state';
-}
 public function create($pid1, $pid2, $dbr=true) {
 	global $_DBR;
 	
@@ -184,9 +178,47 @@ public function getGamestate() {
 	$this->player1.' vs '.$this->player2;
 	return $json;
 }
+public function getCurrentRound() {
+
+	$data = $this->logdata;
+	$lines = explode(PHP_EOL,$data);
+
+	$round_num = 0;
+	$rounds = array();
+	$p1turn = $p2turn = FALSE;
+	for($i=1;$i<count($lines);$i++) {
+
+		$m = $this->messageRead($lines[$i]);
+		if(!$m) continue;
+		
+		//$rounds[$round_num][] = $m;
+
+		if($m['from']=='system' && $m['work']=='ROUND') {
+			//$rounds[$round_num][] = array();
+		}
+		else if($m['work']=='spellcast' && $m['from']=='player1') $p1turn = $m['data'];
+		else if($m['work']=='spellcast' && $m['from']=='player2') $p2turn = $m['data'];
+		
+		//$rounds[] = $m['work'].' '.$m['from'].' '.$m['data'].' '.$p1turn.' '.$p2turn;
+
+		if($p1turn && $p2turn) {
+			$round_data = array(
+				'player1_turn' => $p1turn,
+				'player2_turn' => $p2turn,
+				'num' => $round_num
+				);
+			$rounds[$round_num] = $round_data;
+			$round_num++;
+			$p1turn = $p2turn = FALSE;
+		}
+		//else if($m['from']=='player2') $p2move = $m['data'];
+
+	}
+	return $rounds;
+	//$rounds = $this->readGamestate();
+}
 public function readGamestate() {
-	$floc = $this->logsdir.$this->logfile;
-	$data = file_get_contents($floc);
+	$data = file_get_contents($this->filesrc);
 	$lines = explode(PHP_EOL,$data);
 
 	$round_num = 0;
@@ -211,6 +243,14 @@ public function readGamestate() {
 	}
 	return $rounds;
 }
+public function message_spellCast($sid,$uid) {
+	$from = 'guest';
+	if($uid==$this->player1) $from = 'player1';
+	if($uid==$this->player2) $from = 'player2';
+	$msg = $this->message($from,'spellcast',$sid);
+	$this->messageWrite($msg);
+	return $msg;
+}
 public function message($from,$work,$data='') {
 	$mktm = microtime(true);
 	$time = str_pad($mktm,15,'0');
@@ -221,6 +261,12 @@ public function message($from,$work,$data='') {
 		'data' => $data
 	);
 	return implode(' > ',$a);
+}
+public function messageWrite($msg) {
+
+	file_put_contents($this->filesrc,PHP_EOL.$msg,FILE_APPEND);
+	$this->logdata = file_get_contents($this->filesrc);
+
 }
 public function messageRead($line) {
 

@@ -6,37 +6,33 @@ $spells = array(
 	array('id' => 'lizard','name' => 'Ящерица'),
 	array('id' => 'spock','name' => 'Спок')
 );
-$round = array(
-	'player1_hp' => 95,
-	'player2_hp' => 50,
-	'player1_turn' => FALSE,
-	'player2_turn' => TRUE,
-	'num' => 3
-);
-
 $duel_id = $Userdata['duel']; 
 $duel_db = $_DBR->getDuelById($duel_id);
 $player1 = $_DBR->getUserById($duel_db['player1']);
 $player2 = $_DBR->getUserById($duel_db['player2']);
-
+$player1['spells'] = $spells;
+$player2['spells'] = $spells;
 $Duel->restoreByData($duel_db);
-$duel_text = $Duel->logdata;
-$duel_data = $Duel->data;
 
-	//$duel_data = $duel_id = 'id: '.$Userdata['duel'];
-/*
-	$duel_db = $_DBR->getDuelById($duel_id);
-	$player1 = $_DBR->getUserById($duel_db['player1']);
-	$player2 = $_DBR->getUserById($duel_db['player2']);
-	$player1['spells'] = $spells;
-	$player2['spells'] = $spells;
+$duel_echo = 'Hello';
 
-	$Smarty->assign('player1', $player1);
-	$Smarty->assign('player2', $player2);
-	$Smarty->assign('round', $round);
-	$Smarty->assign('duel',$duel_db);
-*/
-$Smarty->assign('duel_data',$duel_data);
-$Smarty->assign('duel_text',$duel_text);
+if(!empty($_GET['spell'])) {
+	$pid = $_GET['p'];
+	$sid = $_GET['spell'];
+	
+	//$duel_echo = $Duel->getCurrentRound();
+
+	$p1_turn = 0;
+	$p2_turn = 0;
+	$duel_echo.= PHP_EOL.'p1turn: '.$p1_turn.', p2turn: '.$p2_turn;
+	$duel_echo.= PHP_EOL.$Duel->message_spellCast($sid,$pid);
+}
+else $duel_echo = print_r($Duel->getCurrentRound(),true);
+
+$Smarty->assign('player1', $player1);
+$Smarty->assign('player2', $player2);
+$Smarty->assign('duel_echo',$duel_echo);
+$Smarty->assign('duel_data',$Duel->data);
+$Smarty->assign('duel_text',$Duel->logdata);
 $Smarty->display('duel/play.tpl');
 ?>
