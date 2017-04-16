@@ -1,3 +1,9 @@
+.message-success,
+.message-failure {
+	width: 624px;
+	padding: 8px;
+}
+
 .dueldata {
 	position: absolute;
 	left:50px;bottom:0;
@@ -5,7 +11,7 @@
 .duelecho,
 .dueltext {
 	width: 600px;
-	height: 600px;
+	height: 49%;
 	overflow: hidden;
 	overflow-y: scroll;
 	position: absolute;
@@ -13,8 +19,7 @@
 }
 .duelecho {
 	top: 0;
-	bottom: 600px;
-	height: auto;
+	bottom: auto;
 }
 .gameboard {
 	background: black;

@@ -13,21 +13,41 @@ $player2 = $_DBR->getUserById($duel_db['player2']);
 $player1['spells'] = $spells;
 $player2['spells'] = $spells;
 $Duel->restoreByData($duel_db);
+//$failure = NULL;
+//$success = NULL;
 
-$duel_echo = 'Hello';
-
-if(!empty($_GET['spell'])) {
+if(1) {
+	$duel_echo = print_r($Duel->getCurrentState(),true);
+	$Duel->setGameState('rock','spock');
+	$duel_echo.= print_r($Duel->getGameState(),true);
+}
+else if(!empty($_GET['spell'])) {
+	$reject = FALSE;	
 	$pid = $_GET['p'];
 	$sid = $_GET['spell'];
-	
-	//$duel_echo = $Duel->getCurrentRound();
+	$pn = $Duel->pn($pid);
+	$round = $Duel->getCurrentRound();
+	$player1turn = $round['p1_turn'];
+	$player2turn = $round['p2_turn'];
 
-	$p1_turn = 0;
-	$p2_turn = 0;
-	$duel_echo.= PHP_EOL.'p1turn: '.$p1_turn.', p2turn: '.$p2_turn;
-	$duel_echo.= PHP_EOL.$Duel->message_spellCast($sid,$pid);
+	if($pn===NULL) $reject = 'BADPLAYER';
+	else if($pn=='player1' && $player1turn) $reject = 'DOUBLECAST';
+	else if($pn=='player2' && $player2turn) $reject = 'DOUBLECAST';
+	else {
+		if($pn=='player1') $player1turn = $sid;
+		else if($pn=='player2') $player2turn = $sid;
+
+		$Duel->commitSpell($sid,$pid);
+
+		if($player1turn && $player2turn)
+			$Duel->setGameState($player1turn, $player2turn);
+	}
+
+	if($reject) redirectLocation('./?failure='.$reject);
+	else redirectLocation('./?success');
 }
-else $duel_echo = print_r($Duel->getCurrentRound(),true);
+else $duel_echo = array_reverse($Duel->getRounds());
+//else $duel_echo = print_r($Duel->getCurrentRound(),true);
 
 $Smarty->assign('player1', $player1);
 $Smarty->assign('player2', $player2);

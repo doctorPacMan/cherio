@@ -1,5 +1,6 @@
 <?php
 require_once('duel.php');
+require_once('duel.ext.php');
 $Duel = new Duel();
 
 $action = !empty($URL_PARAMS[1]) ? $URL_PARAMS[1] : 'main';

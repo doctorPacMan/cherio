@@ -9,11 +9,11 @@ public $logdata;
 public $player1;
 public $player2;
 private $_state = array(
-	'player1' => 100,
-	'player2' => 100,
-	'round' => 0
+	'player1' => 120,
+	'player2' => 120,
+	'mood1' => 'nice',
+	'mood2' => 'good'
 );
-
 function __construct() {
 	//$this->id = 0;
 	$this->_log = array();
@@ -26,83 +26,20 @@ public function restoreByData($data) {
 	$this->player1 = $data['player1'];
 	$this->player2 = $data['player2'];
 	$this->time = strtotime($data['init_at']);
-	$this->filesrc = realpath(DUELDIR.$data['file']);
-
+	$this->filesrc = realpath(DUELDIR.$this->logfile);
 	$this->logdata = file_get_contents($this->filesrc);
-	$this->readLogfile();
-}
-public function readLogfile() {
 	
-	$data = $this->logdata;
-	$lines = explode(PHP_EOL,$data);
-
-	$round_num = 0;
-	$rounds = array();
-	$p1move = $p2move = FALSE;
-
-	for($i=1;$i<count($lines);$i++) {
-
-		$m = $this->messageRead($lines[$i]);if(!$m) continue;
-		
-		if($m['work']=='ROUND') {
-			$prev_res = isset($rounds[$round_num]) ? $rounds[$round_num]['result'] : NULL;
-			$rn = ++$round_num;
-			$ro = array(
-				'time'=>date('y/m/d H:i:s',$m['time']),
-				'spell1'=>FALSE,
-				'spell2'=>FALSE,
-				'commit'=>FALSE,
-				'number'=>$rn,
-				'before'=>$prev_res,
-				'result'=>$m['data']
-				//'_works'=>NULL
-				);
-			$rounds[$round_num] = $ro;
-			continue;
-		}
-		else $rn = $round_num;
-
-		if($m['work']!='spellcast') {
-			$w = $m['work'].' > '.$m['data'];
-			if(empty($rounds[$rn]['_works'])) $rounds[$rn]['_works'] = array($w);
-			else $rounds[$rn]['_works'][] = $w;
-		}
-		else if($m['from']=='player1') $rounds[$rn]['spell1'] = $m['data'];
-		else if($m['from']=='player2') $rounds[$rn]['spell2'] = $m['data'];
-		if($rounds[$rn]['spell1'] && $rounds[$rn]['spell2']) $rounds[$rn]['commit'] = 1;
-
-/*
-		$rounds[$round_num][] = $m;
-
-		if($m['work']!='spellcast') {}
-		else if($m['from']=='player1') $p1move = $m['data'];
-		else if($m['from']=='player2') $p2move = $m['data'];
-
-		if($p1move && $p2move) {
-			$p1move = $p2move = FALSE;$round_num++;
-			//echo(PHP_EOL.'ROUND COMMIT'.PHP_EOL);
-		}
-*/
-
-	}
-	return $rounds;
+	//$this->getCurrentState();
+}
+public function pn($uid) {
+	if(empty($uid)) return NULL;
+	else if($uid == $this->player1) return 'player1';
+	else if($uid == $this->player2) return 'player2';
 }
 public function restore($id) {
 	global $_DBR;
 	$data = $_DBR->getDuelById($id);
 	$this->restoreByData($data);
-}
-private function commitGameStart() {
-	
-	$data = $this->player1.' vs '.$this->player2.' at '.date('y/m/d H:i:s',$this->time);
-	$start = $this->message('system','START',$data);
-	$data = $this->getGamestate();
-	$round = $this->message('system','ROUND',$data);
-
-	$newdata = $start.PHP_EOL.$round;
-	file_put_contents($this->filesrc, $newdata);
-
-	return $newdata;
 }
 public function delete($id) {
 	global $_DBR;
@@ -123,99 +60,117 @@ public function delete($id) {
 }
 public function reset($id) {
 	global $_DBR;
-
-	$res = 'RESET ';
 	$failure = FALSE;
-
 	$this->restore($id);
-	$res.= $this->id.' '.$this->player1.'vs'.$this->player2.'file: '.$this->filesrc;
-	$res.= ' time: '.date('Y-m-d H:i:s',$this->time);
 
 	$init_time = $_DBR->updateDuelInitTime($id);
-	$res.= PHP_EOL.'update init_at '.($init_time?date('Y-m-d H:i:s',$init_time):'failure');
 	if($init_time) $this->time = $init_time;
 	else $failure = 'init time update failure';
 	
 	// rewrite logfile
-	$res.= PHP_EOL.'--- old ---'.PHP_EOL.$this->logdata;
 	$this->commitGameStart();
 	$this->logdata = file_get_contents($this->filesrc);
-	$res.= PHP_EOL.'--- new ---'.PHP_EOL.$this->logdata;
 	
 	return $failure ?: TRUE;
 }
-public function create($pid1, $pid2, $dbr=true) {
+public function create($pid1, $pid2) {
 	global $_DBR;
 	
 	$this->player1 = $pid1;
 	$this->player2 = $pid2;
 	$this->logfile = 'duel_'.$pid1.'vs'.$pid2.'.log';
 
-	$floc = $this->logsdir.$this->logfile;
-	$file = fopen($floc, 'w');
-
-	$data = $this->player1.' vs '.$this->player2;
-	$start = $this->message('system','START',$data);
-	$data = $this->getGamestate();
-	$state = $this->message('system','ROUND',$data);
-
-	fwrite($file, $start.PHP_EOL.$state);
-	fclose($file);
-
-	$this->logdata = file_get_contents($floc);
+	file_put_contents(DUELDIR.$this->logfile,'empty');
+	$this->filesrc = realpath(DUELDIR.$this->logfile);
 
 	$bdata = $_DBR->insertNewDuel($this->player1, $this->player2, $this->logfile);
+
+	$this->commitGameStart();
+	$this->logdata = file_get_contents($this->filesrc);
+
 	return $bdata;
 }
+private function commitGameStart() {
+	$data = $this->player1.' vs '.$this->player2.' at '.date('y/m/d H:i:s',$this->time);
+	$data = $this->message('system','START',$data);
+	file_put_contents($this->filesrc, $data);
+	$this->commitRound();
+}
+public function commitRound() {
+	$json = $this->getGamestate();
+	$msg = $this->message('system','ROUND',$json);
+	$this->messageWrite($msg);
+	return $msg;
+}
+public function commitSpell($sid,$uid) {
+	$from = 'player0';
+	if($uid==$this->player1) $from = 'player1';
+	if($uid==$this->player2) $from = 'player2';
+	$msg = $this->message($from,'spellcast',$sid);
+	$this->messageWrite($msg);
+
+	return;
+}
+public function setGamestate($p1sid, $p2sid) {
+	$state = $this->getCurrentState();
+	$this->_state = changeGameState($state, $p1sid, $p2sid);
+	//$this->commitRound();
+
+	return TRUE;
+}
 public function getGamestate() {
-
-	$state = array(
-		'player1' => 100,
-		'player2' => 100
-	);
-	$json = json_encode($state);
-
-	$this->player1.' vs '.$this->player2;
+	$json = json_encode($this->_state);
 	return $json;
 }
-public function getCurrentRound() {
-
-	$data = $this->logdata;
+public function getRounds() {
+	$data = file_get_contents($this->filesrc);
 	$lines = explode(PHP_EOL,$data);
 
-	$round_num = 0;
 	$rounds = array();
+	$round_num = 0;
 	$p1turn = $p2turn = FALSE;
 	for($i=1;$i<count($lines);$i++) {
-
 		$m = $this->messageRead($lines[$i]);
 		if(!$m) continue;
-		
-		//$rounds[$round_num][] = $m;
 
-		if($m['from']=='system' && $m['work']=='ROUND') {
-			//$rounds[$round_num][] = array();
+		if(empty($rounds[$round_num])) $rounds[$round_num] = array(
+			'result'=>NULL,
+			'before'=>NULL,
+			'p1_turn' => FALSE,
+			'p2_turn' => FALSE,
+			'mesgs' => array(),
+			'num' => $round_num
+		);
+
+		if($m['work']=='ROUND') {
+			$rounds[$round_num]['before'] = $m['data'];
+			if(!empty($rounds[$round_num-1]))
+				$rounds[$round_num-1]['result'] = $m['data'];
 		}
-		else if($m['work']=='spellcast' && $m['from']=='player1') $p1turn = $m['data'];
-		else if($m['work']=='spellcast' && $m['from']=='player2') $p2turn = $m['data'];
-		
-		//$rounds[] = $m['work'].' '.$m['from'].' '.$m['data'].' '.$p1turn.' '.$p2turn;
+		else if($m['work']=='spellcast') {
+			$rounds[$round_num]['mesgs'][] = $lines[$i];
+			if($m['from']=='player1') $rounds[$round_num]['p1_turn'] = $p1turn = $m['data'];
+			if($m['from']=='player2') $rounds[$round_num]['p2_turn'] = $p2turn = $m['data'];
+		}
 
 		if($p1turn && $p2turn) {
-			$round_data = array(
-				'player1_turn' => $p1turn,
-				'player2_turn' => $p2turn,
-				'num' => $round_num
-				);
-			$rounds[$round_num] = $round_data;
-			$round_num++;
 			$p1turn = $p2turn = FALSE;
+			$round_num++;
 		}
 		//else if($m['from']=='player2') $p2move = $m['data'];
-
 	}
 	return $rounds;
-	//$rounds = $this->readGamestate();
+
+}
+public function getCurrentRound() {
+	$rounds = $this->getRounds();
+	$k = count($rounds) - 1;
+	return !empty($rounds[$k]) ? $rounds[$k] : NULL;
+}
+public function getCurrentState() {
+	$round = $this->getCurrentRound();
+	$json = $round['before'];
+	return json_decode($json,true);
 }
 public function readGamestate() {
 	$data = file_get_contents($this->filesrc);
@@ -242,14 +197,6 @@ public function readGamestate() {
 		}
 	}
 	return $rounds;
-}
-public function message_spellCast($sid,$uid) {
-	$from = 'guest';
-	if($uid==$this->player1) $from = 'player1';
-	if($uid==$this->player2) $from = 'player2';
-	$msg = $this->message($from,'spellcast',$sid);
-	$this->messageWrite($msg);
-	return $msg;
 }
 public function message($from,$work,$data='') {
 	$mktm = microtime(true);

@@ -1,11 +1,15 @@
 {include file='_intro.tpl'}
+<script type="text/javascript" src="/js/play.js"></script>
 
 {if !empty($duel_data)}<pre class="dueldata">{$duel_data|@print_r:true}</pre>{/if}
 
 {if !empty($duel_echo)}<textarea class="duelecho">{$duel_echo|@print_r:true}</textarea>{/if}
 {if !empty($duel_text)}<textarea class="dueltext">{$duel_text|@print_r:true}</textarea>{/if}
 
-<a class="btn">Restart</a>
+<a class="btn" href="./">Okay</a>
+
+{if isset($smarty.get.failure)}<div class="message-failure">{$smarty.get.failure|default:'Failure'}</div>{/if}
+{if isset($smarty.get.success)}<div class="message-success">{$smarty.get.success|default:'Success'}</div>{/if}
 
 <div class="gameboard">
 	
