@@ -114,7 +114,7 @@ public function commitSpell($sid,$uid) {
 public function setGamestate($p1sid, $p2sid) {
 	$state = $this->getCurrentState();
 	$this->_state = changeGameState($state, $p1sid, $p2sid);
-	//$this->commitRound();
+	$this->commitRound();
 
 	return TRUE;
 }
@@ -239,7 +239,7 @@ public function save() {
 	return;
 }
 public function getState() {
-	return $this->player1.' vs '.$this->player2;
+	return $this->_state;
 }
 }
 ?>

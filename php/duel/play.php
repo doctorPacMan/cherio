@@ -16,10 +16,10 @@ $Duel->restoreByData($duel_db);
 //$failure = NULL;
 //$success = NULL;
 
-if(1) {
-	$duel_echo = print_r($Duel->getCurrentState(),true);
-	$Duel->setGameState('rock','spock');
-	$duel_echo.= print_r($Duel->getGameState(),true);
+if(0) {
+	$duel_echo = print_r($Duel->getState(),true);
+	$Duel->setGameState('lizard','lizard');
+	$duel_echo.= print_r($Duel->getState(),true);
 }
 else if(!empty($_GET['spell'])) {
 	$reject = FALSE;	

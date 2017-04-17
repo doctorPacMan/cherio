@@ -2,8 +2,6 @@
 function changeGameState($state, $player1sid, $player2sid) {
 	$cs = array_merge(array(), $state);
 	$ns = array_merge(array(), $state);
-	$ns['player1'] = $cs['player1'] - 5;
-	$ns['player2'] = $cs['player2'] - 7;
 
 	$rock_paper = 'Бумага заворачивает камень';
 	$rock_scissors = 'Камень разбивает ножницы';
@@ -17,7 +15,7 @@ function changeGameState($state, $player1sid, $player2sid) {
 	$lizard_spock = 'Ящерица травит Спока';
 
 	$win = 0;
-	$txt = '';
+	$txt = 'Ничья';
 	switch ($player1sid) {
 	case 'rock':
 		if($player2sid=='paper')	{$win = 2;$txt = $rock_paper;}
@@ -50,7 +48,16 @@ function changeGameState($state, $player1sid, $player2sid) {
 		if($player2sid=='lizard')	{$win = 2;$txt = $lizard_spock;}
 	break;
 	}
-	$ns['echo'] = 'win:'.$win.' txt:'.$txt;
+
+	if($win==0) {
+		$ns['player1'] += -10;
+		$ns['player2'] += -10;
+	}
+	else if($win==2) $ns['player1'] += -20;
+	else if($win==1) $ns['player2'] += -20;
+
+	$ns['echo'] = '('.$player1sid.'|'.$player2sid.')';//.$txt;
+	$ns['echo'].= $win>0 ? ' player'.$win.' win' : '';
 	return $ns;
 }
 ?>
