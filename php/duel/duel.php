@@ -11,8 +11,8 @@ public $player2;
 private $_state = array(
 	'player1' => 120,
 	'player2' => 120,
-	'mood1' => 'nice',
-	'mood2' => 'good'
+	'mood1' => 5,
+	'mood2' => 5
 );
 function __construct() {
 	//$this->id = 0;
@@ -143,6 +143,11 @@ public function getRounds() {
 		);
 
 		if($m['work']=='ROUND') {
+			$time = floatval($m['time']);
+			$ends = $time + (5*60);
+			$rounds[$round_num]['init'] = date('y/m/d H:i:s',$time);
+			$rounds[$round_num]['ends'] = date('y/m/d H:i:s',$ends);
+			//$rounds[$round_num]['ends'] = date('y/m/d H:i:s',$ends);
 			$rounds[$round_num]['before'] = $m['data'];
 			if(!empty($rounds[$round_num-1]))
 				$rounds[$round_num-1]['result'] = $m['data'];

@@ -53,11 +53,16 @@ function changeGameState($state, $player1sid, $player2sid) {
 		$ns['player1'] += -10;
 		$ns['player2'] += -10;
 	}
-	else if($win==2) $ns['player1'] += -20;
-	else if($win==1) $ns['player2'] += -20;
-
+	else if($win==2) {
+		$ns['player1'] += -20;
+		$ns['mood1'] += -1;
+	}
+	else if($win==1) {
+		$ns['player2'] += -20;
+		$ns['mood2'] += -1;
+	}
 	$ns['echo'] = '('.$player1sid.'|'.$player2sid.')';//.$txt;
-	$ns['echo'].= $win>0 ? ' player'.$win.' win' : '';
+	$ns['echo'].= $win>0 ? ' player'.$win.' win' : 'draw';
 	return $ns;
 }
 ?>
