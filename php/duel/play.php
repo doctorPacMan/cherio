@@ -29,10 +29,18 @@ else if(!empty($_GET['spell'])) {
 	$round = $Duel->getCurrentRound();
 	$player1turn = $round['p1_turn'];
 	$player2turn = $round['p2_turn'];
+	
+	$endtime = $round['time'] + (1*60);
+	$timeout = time()>$endtime ? TRUE : FALSE;
 
 	if($pn===NULL) $reject = 'BADPLAYER';
 	else if($pn=='player1' && $player1turn) $reject = 'DOUBLECAST';
 	else if($pn=='player2' && $player2turn) $reject = 'DOUBLECAST';
+	else if($timeout) {
+		if(!$player1turn) $Duel->commitSpell($player1turn='timeout',$Duel->player1);
+		if(!$player2turn) $Duel->commitSpell($player2turn='timeout',$Duel->player2);
+		$Duel->setGameState($player1turn, $player2turn);
+	}
 	else {
 		if($pn=='player1') $player1turn = $sid;
 		else if($pn=='player2') $player2turn = $sid;

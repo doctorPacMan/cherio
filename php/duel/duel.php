@@ -8,9 +8,13 @@ private $logfile;
 public $logdata;
 public $player1;
 public $player2;
+public $complete = FALSE;
+private $roundtime = 45;
 private $_state = array(
-	'player1' => 120,
-	'player2' => 120,
+	'complete' => FALSE,
+	'winner' => 0,
+	'player1' => 60,
+	'player2' => 60,
 	'mood1' => 5,
 	'mood2' => 5
 );
@@ -25,6 +29,7 @@ public function restoreByData($data) {
 	$this->logfile = $data['file'];
 	$this->player1 = $data['player1'];
 	$this->player2 = $data['player2'];
+	$this->complete = !!$data['complete'];
 	$this->time = strtotime($data['init_at']);
 	$this->filesrc = realpath(DUELDIR.$this->logfile);
 	$this->logdata = file_get_contents($this->filesrc);
@@ -40,6 +45,14 @@ public function restore($id) {
 	global $_DBR;
 	$data = $_DBR->getDuelById($id);
 	$this->restoreByData($data);
+}
+private function setGameComplete() {
+	global $_DBR;
+	$win = $this->_state['winner'];
+	$this->complete = TRUE;
+	$this->commitGameComplete();
+	$this->logdata = file_get_contents($this->filesrc);
+	$_DBR->updateDuelResult($this->id, $win, $this->logdata);
 }
 public function delete($id) {
 	global $_DBR;
@@ -63,7 +76,7 @@ public function reset($id) {
 	$failure = FALSE;
 	$this->restore($id);
 
-	$init_time = $_DBR->updateDuelInitTime($id);
+	$init_time = $_DBR->updateDuelReset($id);
 	if($init_time) $this->time = $init_time;
 	else $failure = 'init time update failure';
 	
@@ -96,6 +109,11 @@ private function commitGameStart() {
 	file_put_contents($this->filesrc, $data);
 	$this->commitRound();
 }
+private function commitGameComplete($winner) {
+	$msg = $this->message('system','COMPLETE',$this->_state['winner']);
+	$this->messageWrite($msg);
+	return $msg;
+}
 public function commitRound() {
 	$json = $this->getGamestate();
 	$msg = $this->message('system','ROUND',$json);
@@ -115,6 +133,8 @@ public function setGamestate($p1sid, $p2sid) {
 	$state = $this->getCurrentState();
 	$this->_state = changeGameState($state, $p1sid, $p2sid);
 	$this->commitRound();
+	
+	if($this->_state['complete']) $this->setGameComplete();
 
 	return TRUE;
 }
@@ -128,32 +148,36 @@ public function getRounds() {
 
 	$rounds = array();
 	$round_num = 0;
+	$timeout = FALSE;
 	$p1turn = $p2turn = FALSE;
+	$now = time();
 	for($i=1;$i<count($lines);$i++) {
 		$m = $this->messageRead($lines[$i]);
 		if(!$m) continue;
 
 		if(empty($rounds[$round_num])) $rounds[$round_num] = array(
+			'time' => NULL,
 			'result'=>NULL,
 			'before'=>NULL,
 			'p1_turn' => FALSE,
 			'p2_turn' => FALSE,
-			'mesgs' => array(),
 			'num' => $round_num
 		);
 
 		if($m['work']=='ROUND') {
-			$time = floatval($m['time']);
-			$ends = $time + (5*60);
-			$rounds[$round_num]['init'] = date('y/m/d H:i:s',$time);
-			$rounds[$round_num]['ends'] = date('y/m/d H:i:s',$ends);
-			//$rounds[$round_num]['ends'] = date('y/m/d H:i:s',$ends);
+
+			$timeini = floatval($m['time']);
+			$timeout = $timeini + $this->roundtime;
+			
+			$rounds[$round_num]['time'] = $timeini;
+			$rounds[$round_num]['timeini'] = date('H:i:s',$timeini);
+			$rounds[$round_num]['timeout'] = date('H:i:s',$timeout);
 			$rounds[$round_num]['before'] = $m['data'];
 			if(!empty($rounds[$round_num-1]))
 				$rounds[$round_num-1]['result'] = $m['data'];
 		}
 		else if($m['work']=='spellcast') {
-			$rounds[$round_num]['mesgs'][] = $lines[$i];
+			//$rounds[$round_num]['lines'][] = $lines[$i];
 			if($m['from']=='player1') $rounds[$round_num]['p1_turn'] = $p1turn = $m['data'];
 			if($m['from']=='player2') $rounds[$round_num]['p2_turn'] = $p2turn = $m['data'];
 		}
@@ -162,7 +186,6 @@ public function getRounds() {
 			$p1turn = $p2turn = FALSE;
 			$round_num++;
 		}
-		//else if($m['from']=='player2') $p2move = $m['data'];
 	}
 	return $rounds;
 

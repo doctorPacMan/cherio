@@ -87,18 +87,39 @@ public function insertNewUser($login, $pass) {
 	$bdata = $this->getUserByLogin($login);
 	return $bdata;
 }
-public function updateDuelInitTime($did, $time=NULL) {
+public function updateDuelReset($did, $time=NULL) {
 
 	$time = $time ? strtotime($time) : time();
 	$query_time = $this->quote(date('Y-m-d H:i:s',$time));
 
-	$query = "UPDATE `duels` SET init_at=".$query_time;
-	$query.= " WHERE duels.id=".$this->quote($did);
+	$query = "UPDATE `duels` SET";
+	$query.= " `init_at` = ".$query_time;
+	$query.= ", `winner` = NULL";
+	$query.= ", `complete` = '0'";
+	$query.= ", `combatlog` = NULL";
+	$query.= " WHERE duels.id = ".$this->quote($did);
 	$pdost = $this->query($query);
 	$error = $pdost->errorCode();
 	if($error!='00000') return FALSE;
 
 	return $time;
+}
+public function updateDuelResult($did, $win=NULL, $data) {
+
+	$query_data = $this->quote($data);
+	$query_time = $this->quote(date('Y-m-d H:i:s',time()));
+	$query_win = $win===NULL ? 'NULL' : $this->quote($win);
+
+	$query = "UPDATE `duels` SET";
+	$query.= " `done_at` = ".$query_time;
+	$query.= ", `winner` = ".$query_win;
+	$query.= ", `complete` = '1'";
+	$query.= ", `combatlog` = ".$query_data;
+	$query.= " WHERE duels.id = ".$this->quote($did);
+	$pdost = $this->query($query);
+	$error = $pdost->errorCode();
+	if($error!='00000') return FALSE;
+	return TRUE;
 }
 public function deleteDuelById($did) {
 	

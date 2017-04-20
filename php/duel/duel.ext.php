@@ -16,8 +16,21 @@ function changeGameState($state, $player1sid, $player2sid) {
 
 	$win = 0;
 	$txt = 'Ничья';
-	switch ($player1sid) {
+	if($player1sid=='timeout' && $player2sid=='timeout') {
+		$win = 0;
+		$txt = 'Игрок замешкался';
+	}
+	else if($player1sid=='timeout') {
+		$win = 2;
+		$txt = 'Игрок 1 замешкался';
+	}
+	else if($player2sid=='timeout') {
+		$win = 1;
+		$txt = 'Игрок 2 замешкался';
+	}
+	else switch ($player1sid) {
 	case 'rock':
+		//if($player2sid=='timeout')	{$win = 1;$txt = $rock_scissors;}
 		if($player2sid=='paper')	{$win = 2;$txt = $rock_paper;}
 		if($player2sid=='scissors') {$win = 1;$txt = $rock_scissors;}
 		if($player2sid=='lizard')	{$win = 1;$txt = $rock_lizard;}
@@ -63,6 +76,12 @@ function changeGameState($state, $player1sid, $player2sid) {
 	}
 	$ns['echo'] = '('.$player1sid.'|'.$player2sid.')';//.$txt;
 	$ns['echo'].= $win>0 ? ' player'.$win.' win' : 'draw';
+
+	if($ns['player1']<=0 || $ns['player2']<=0) {
+		$ns['complete'] = TRUE;
+		$ns['winner'] = $ns['player1']>$ns['player2'] ? 1 : ($ns['player1']<$ns['player2'] ? 2 : 0);
+	}
+	
 	return $ns;
 }
 ?>
