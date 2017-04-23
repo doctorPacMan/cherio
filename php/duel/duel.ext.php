@@ -74,7 +74,8 @@ function changeGameState($state, $player1sid, $player2sid) {
 		$ns['player2'] += -20;
 		$ns['mood2'] += -1;
 	}
-	$ns['echo'] = '('.$player1sid.'|'.$player2sid.')';//.$txt;
+	$ns['text'] = $txt;
+	$ns['echo'] = '('.$player1sid.'|'.$player2sid.')';
 	$ns['echo'].= $win>0 ? ' player'.$win.' win' : 'draw';
 
 	if($ns['player1']<=0 || $ns['player2']<=0) {

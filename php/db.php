@@ -22,7 +22,10 @@ public function getDuelsList() {
 	return $duels ?: array();
 }
 public function getUserDuels($uid) {
-	$query = "SELECT * FROM `duels` WHERE duels.player1=".$uid." OR duels.player2=".$uid;
+	$query = "SELECT * FROM `duels` WHERE";
+	//$query.= " duels.complete IS NULL";
+	$query.= " duels.complete='0'";
+	$query.= " AND (duels.player1=".$uid." OR duels.player2=".$uid.")";
 	$duels = $this->queryFetchAll($query);
 	return $duels ?: array();
 }
@@ -142,6 +145,12 @@ public function getDuelById($did) {
 	$query = "SELECT * FROM `duels` WHERE duels.id=".$did;
 	$bdata = $this->queryFetch($query);
 	return $bdata ?: NULL;
+}
+public function completeUsersDuel($did) {
+	$query_did = $this->quote($did);
+	$query = "UPDATE `users` SET duel=0 WHERE users.duel=".$query_did;
+	$this->query($query);
+	return TRUE;
 }
 public function insertNewDuel($player1, $player2, $file) {
 	$query_pid1 = $this->quote($player1);

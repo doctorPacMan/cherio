@@ -30,13 +30,12 @@
 <tr{if !empty($User) && $User.duel==$v.id} class="hlgt"{/if}>
 	<td>{$v.id}</td>
 	<td>{$v.init_at|date_format:'%D %T'}</td>
-	<td>{$v.player2}</td>
+	<td>{$v.player1}</td>
 	<td>{$v.player2}</td>
 	<td>{$v.complete}</td>
 	<td>
 		<a class="btn" href="./?reset={$v.id}">reset</a>
 		<a class="btn" href="./?delete={$v.id}">delete</a>
-		<button class="btn" onclick="alert('{$v.combatlog|escape:'quotes'|strip}')">result</button>
 	</td>
 </tr>
 {/foreach}

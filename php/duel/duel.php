@@ -9,7 +9,8 @@ public $logdata;
 public $player1;
 public $player2;
 public $complete = FALSE;
-private $roundtime = 45;
+//private $roundtime = 45;
+private $roundtime = 30*60;
 private $_state = array(
 	'complete' => FALSE,
 	'winner' => 0,
@@ -53,6 +54,7 @@ private function setGameComplete() {
 	$this->commitGameComplete();
 	$this->logdata = file_get_contents($this->filesrc);
 	$_DBR->updateDuelResult($this->id, $win, $this->logdata);
+	$_DBR->completeUsersDuel($this->id);// set users.duel='0'
 }
 public function delete($id) {
 	global $_DBR;
@@ -170,8 +172,9 @@ public function getRounds() {
 			$timeout = $timeini + $this->roundtime;
 			
 			$rounds[$round_num]['time'] = $timeini;
-			$rounds[$round_num]['timeini'] = date('H:i:s',$timeini);
-			$rounds[$round_num]['timeout'] = date('H:i:s',$timeout);
+			$rounds[$round_num]['ends'] = $timeout;
+			$rounds[$round_num]['_time'] = date('m/d H:i:s',$timeini);
+			$rounds[$round_num]['_ends'] = date('m/d H:i:s',$timeout);
 			$rounds[$round_num]['before'] = $m['data'];
 			if(!empty($rounds[$round_num-1]))
 				$rounds[$round_num-1]['result'] = $m['data'];
@@ -189,6 +192,18 @@ public function getRounds() {
 	}
 	return $rounds;
 
+}
+public function getCurrentRoundData() {
+	$round = $this->getCurrentRound();
+	$state = json_decode($round['before'],true);
+	
+	$round['message'] = !empty($state['text']) ? $state['text'] : '';
+	$round['p1_mood'] = $state['mood1'];
+	$round['p2_mood'] = $state['mood2'];
+	$round['p1_hp'] = $state['player1'];
+	$round['p2_hp'] = $state['player2'];
+
+	return $round;
 }
 public function getCurrentRound() {
 	$rounds = $this->getRounds();

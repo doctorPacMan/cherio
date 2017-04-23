@@ -58,6 +58,27 @@
 .gameboard button.spl-spock:before {content: "\f259"}
 .gameboard button.spl-lizard:before {content: "\f258"}
 
+.gameboard button.spl.st-active {
+	background-color: rgba(0,100,100,1);
+}
+.gameboard .tmout {
+	position: relative;
+	width: 100%;
+	height: 20px;
+	background: gray;
+}
+.gameboard .tmout > s,
+.gameboard .tmout > u {
+	text-decoration: none;
+	position: absolute;
+	left:0; width:100%;
+	top:0; height:100%;
+}
+.gameboard .tmout > s {
+	background: darkgreen;
+}
+
+
 .dueler {
 	text-align: center;
 	width: 200px;
