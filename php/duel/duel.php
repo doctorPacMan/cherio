@@ -10,7 +10,7 @@ public $player1;
 public $player2;
 public $complete = FALSE;
 //private $roundtime = 45;
-private $roundtime = 30*60;
+private $roundtime = 3000*60;
 private $_state = array(
 	'complete' => FALSE,
 	'winner' => 0,

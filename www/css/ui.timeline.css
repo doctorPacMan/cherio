@@ -1,0 +1,93 @@
+@keyframes timecirc {
+  from {}
+  to {transform: rotate(180deg)}
+}
+@keyframes timeline {
+  from {}
+  to {background-size: 100% 100%}
+}
+@keyframes timeline-spark {
+  from {left: 0}
+  to {left: 100%}
+}
+.timeline {
+	position: relative;
+	display: block;
+	height: 24px;
+	background: green none no-repeat 0 0;
+	width: 450px;
+	background-image: linear-gradient(90deg, darkorange 0, darkorange);
+	background-size: 10% 100%;
+	overflow: hidden;
+}
+.timeline {
+	animation: timeline 5s 1 linear 0s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+.timeline:after {
+	content:'';
+	opacity: .75;
+	position: absolute;
+	top:0; height:100%;
+	left:20px; width:24px;
+	background: transparent none no-repeat 0 0;
+	background-image: linear-gradient(90deg, transparent 0, darkorange 75%, transparent);
+	animation: timeline-spark 1s infinite ease 0s;
+}
+
+.timecirc {
+	position: relative;
+	display: block;
+	width: 82px;
+	height: 82px;
+	background: rgb(39,46,59);
+	overflow: hidden;
+	border-radius: 50%;
+	text-align: center;
+	line-height: 82px;
+	font: 12px/82px monospace;
+}
+.timecirc > b,
+.timecirc:after,
+.timecirc:before {
+	z-index: 1;
+	overflow: hidden;
+	position: absolute;
+	right:0px;left:0px;
+	bottom:0px;top:0px;
+}
+.timecirc:before {
+	content: '';
+	margin: 1px;
+	border-radius: 50%;
+	border: 5px solid rgb(60,160,220);
+}
+.timecirc:after,
+.timecirc > b {z-index: 2}
+
+.timecirc > s {
+	z-index: 1;
+	overflow: hidden;
+	position: absolute;
+	width:50%;left:0px;
+	height:100%; top:0;
+}
+.timecirc > s + s {
+	left: 50%;
+}
+.timecirc > s > s {
+	position: absolute;
+	width:200%;left:0;
+	height:100%;top:0;
+	background: transparent none no-repeat 0 0;
+	background-image: linear-gradient(90deg, rgb(39,46,59) 50%, transparent 50%);
+	animation: timecirc .5s 1 linear .5s;
+	animation-fill-mode: forwards;
+	animation-play-state: paused;
+}
+.timecirc > s + s > s {
+	background-image: linear-gradient(270deg, rgb(39,46,59) 50%, transparent 50%);
+	left: auto; right: 0;
+	animation-delay: 0s;
+}

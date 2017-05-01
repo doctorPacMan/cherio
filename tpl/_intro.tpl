@@ -12,6 +12,9 @@
 	<link rel="stylesheet" href="/css/css.css?v={$smarty.now}" />
 	<link rel="stylesheet" href="/css/etc.css?v={$smarty.now}" />
 	
+	<link rel="stylesheet" href="/css/ui.timeline.css?v={$smarty.now}" />
+	<script type="text/javascript" src="/js/ui.timeline.js?v={$smarty.now}"></script>
+
 	<script type="text/javascript" src="/js/utils.js"></script>
 	<script type="text/javascript" src="/js/ajax.js"></script>
 	<script type="text/javascript" src="/js/js.js"></script>

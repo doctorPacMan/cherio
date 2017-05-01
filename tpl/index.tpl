@@ -1,5 +1,21 @@
 {include file='_intro.tpl'}
 
+<p><u class="timeline"></u></p>
+
+{strip}
+<p>
+	{assign 'ts' $smarty.now-4}
+	{assign 'tn' $smarty.now+8}
+	<u class="timecirc" data-timer="90" data-start="{$ts}" data-ends="{$tn}">
+		{*
+		<s><s></s></s>
+		<s><s></s></s>
+		<b>00:02</b>
+		*}
+	</u>
+</p>
+{/strip}
+
 <div class="message-success mask-grid">Message SUCCESS</div>
 <div class="message-failure">Message FAILURE</div>
 <div class="message-warning">Message WARNING</div>
