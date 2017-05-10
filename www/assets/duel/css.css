@@ -30,21 +30,27 @@ button.spl {
 	border: 0;
 	outline: 0;
 	background: transparent;
-	color: gray;
-	box-shadow: inset 0 0 0 3px gray;
+	color: rgb(60,160,220);
+	border: 3px solid rgb(60,160,220);
 	border-radius: 50%;
     font: 36px/48px FontAwesome;
 }
 button.spl:before {
 	content: 'X';
 }
-button.spl-rock:before {content: "\f255"}
-button.spl-scissors:before {content: "\f257"}
-button.spl-paper:before {content: "\f256"}
-button.spl-spock:before {content: "\f259"}
-button.spl-lizard:before {content: "\f258"}
+button.spl-rock:before {content: '\f255'}
+button.spl-scissors:before {content: '\f257'}
+button.spl-paper:before {content: '\f256'}
+button.spl-lizard:before {content: '\f258'}
+button.spl-spock:before {
+	content: '\f259';
+	padding-left: .15em;
+}
+
 button.spl.st-active {
 	background-color: rgba(0,100,100,1);
+	border-color: darkorange;
+	color: darkorange;
 }
 
 .gameboard {
@@ -71,6 +77,15 @@ button.spl.st-active {
 .round-timer > u.timecirc {
 }
 
+.round-message {
+	position: absolute;
+	top: 120px;
+	left:20px;
+	right:20px;
+	text-align: center;
+	font-size: 150%;
+}
+
 .dueler {
 	width: calc(50% - 50px);
 	border: 1px solid blue;
@@ -82,10 +97,24 @@ button.spl.st-active {
 .dueler-foe {right:0}
 .dueler > p {
 	margin: 0;
+	position: relative;
 	text-align: center;
 	height: 36px;
 	line-height: 36px;
 }
+.dueler > p > b,
+.dueler > p > u,
+.dueler > p > s {
+	position: relative;
+}
+.dueler > p > s {
+	position: absolute;
+	left:0;width:100%;
+	top:0;height:100%;
+	background:green;
+	transition: width .5s ease 0s;
+}
+.dueler-you > p > u {float: right}
 .dueler-you > p > b {float: left}
 .dueler-you > p > u {float: right}
 .dueler-foe > p > b {float: right}
@@ -112,12 +141,12 @@ button.spl.st-active {
 	width: 180px;
 	margin: 42px 0 0;
 }
-.gbd-enemy > button.spl {
+.gbd-enemy button.spl {
 	width: 36px;
 	height: 36px;
 	font-size: 20px;
 	line-height: 24px;
-	box-shadow: inset 0 0 0 2px grey;
+	border-width: 2px;
 }
 
 /*

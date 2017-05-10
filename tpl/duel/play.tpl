@@ -13,9 +13,13 @@
 {if $player1.id==$User.id}
 	{assign 'you' $player1}
 	{assign 'foe' $player2}
+	{assign 'you_turn' $round.p1_turn}
+	{assign 'foe_turn' $round.p2_turn}
 {else}
 	{assign 'you' $player2}
 	{assign 'foe' $player1}
+	{assign 'you_turn' $round.p2_turn}
+	{assign 'foe_turn' $round.p1_turn}
 {/if}
 
 {strip}
@@ -23,66 +27,51 @@
 	
 	<div class="round-timer">
 		{math assign='rv' t=$smarty.now s=$round.ends equation='round(s-t)'}
-		<u class="timecirc" data-timer="{$rv}"></u>
+		{assign 'ts' $round.time}
+		{assign 'tn' $round.ends}
+		<u class="timecirc" data-timer="{$rv}" data-start="{$ts}" data-ends="{$tn}"></u>
 	</div>
 
+	{math assign='p1hp' m=120 x=$round.p1_hp equation='round(100*x/m)'}
+	{math assign='p2hp' m=120 x=$round.p2_hp equation='round(100*x/m)'}
 	<div class="dueler dueler-{if $player1.id==$User.id}you{else}foe{/if}">
-		<p><b>{$player1.login}</b><u>{$round.p1_hp}</u></p>
+		<p>
+			<s style="width:{$p1hp}%"></s>
+			<b>{$player1.login}</b>
+			<u>{$round.p1_hp}</u>
+		</p>
 	</div>
 	<div class="dueler dueler-{if $player2.id==$User.id}you{else}foe{/if}">
-		<p><b>{$player2.login}</b><u>{$round.p2_hp}</u></p>
+		<p>
+			<s style="width:{$p2hp}%"></s>
+			<b>{$player2.login}</b>
+			<u>{$round.p2_hp}</u>
+		</p>
 	</div>
 
 	<form action="./" method="get" class="gbd-panel">
 		<input type="hidden" name="p" value="{$you.id}" />
 		{foreach from=$you.spells item='s'}
-		<button name="spell" value="{$s.id}" class="spl spl-{$s.id}{if $s.id==$round.p2_turn} st-active{/if}" title="{$s.name}"></button>
+		<button name="spell" value="{$s.id}" class="spl spl-{$s.id}{if $s.id==$you_turn} st-active{/if}" title="{$s.name}"></button>
 		{/foreach}
 	</form>
 
 	<form action="./" method="get" class="gbd-enemy">
 		<input type="hidden" name="p" value="{$foe.id}" />
 		{foreach from=$foe.spells item='s'}
-		<button name="spell" value="{$s.id}" class="spl spl-{$s.id}{if $s.id==$round.p2_turn} st-active{/if}" title="{$s.name}"></button>
+		<button name="spell" value="{$s.id}" class="spl spl-{$s.id}{if $s.id==$foe_turn} st-active{/if}" title="{$s.name}"></button>
 		{/foreach}
 	</form>
 
-{*
-	<div class="tmout">
-		{math assign='rd' t=$round.time s=$round.ends equation='s-t'}
-		{math assign='rv' t=$smarty.now s=$round.ends equation='round(s)-t'}
-		{math assign='rp' rd=$rd rv=$rv s=$round.ends equation='round(10000*rv/rd)/100'}
-		<s style="width: {$rp}%"></s>
-		<u>{$rv}/{$rd}s {$round.ends|date_format:'%D %T'}</u>
-	</div>
-	
-	<big>Round {$round.num}</big>
-	<p>{$round.message|default:'Message'}</p>
-	{strip}
-	<div class="dueler{if $player1.id==$User.id} dueler-you{/if}" id="player1">
-		<p>Player 1: {$player1.login} <b>{$round.p1_hp}</b></p>
-		<form action="./" method="get">
-			<input type="hidden" name="p" value="{$player1.id}" />
-			{foreach from=$player1.spells item='s'}
-			<button name="spell" value="{$s.id}" class="spl spl-{$s.id}{if $s.id==$round.p1_turn} st-active{/if}" title="{$s.name}"></button>
-			{/foreach}
-		</form>
-	</div>
-	{/strip}
+	<div class="round-message" id="round-message">RMSG</div>
 
-	{strip}
-	<div class="dueler{if $player2.id==$User.id} dueler-you{/if}" id="player2">
-		<p>Player 2: {$player2.login} <b>{$round.p2_hp}</b></p>
-		<form action="./" method="get">
-			<input type="hidden" name="p" value="{$player2.id}" />
-			{foreach from=$player2.spells item='s'}
-			<button name="spell" value="{$s.id}" class="spl spl-{$s.id}{if $s.id==$round.p2_turn} st-active{/if}" title="{$s.name}"></button>
-			{/foreach}
-		</form>
-	</div>
-	{/strip}
-*}
+
 </div>
 {/strip}
-
+<script>
+var befor = {$round.before};
+console.log(befor.text);
+var rmsg = document.getElementById('round-message');
+rmsg.innerText = befor.text;
+</script>
 {include file='_outro.tpl'}

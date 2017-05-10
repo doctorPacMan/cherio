@@ -20,11 +20,8 @@ uiTimeline.prototype = {
 		u.addEventListener('click',this.pause.bind(this,null),false);
 		//u.addEventListener('contextmenu',this.click.bind(this,null),false); 
 		//this.valueRel(.522);
-
 		//this.valueAbs(new Date(this.now() + 1000*2));
-
-
-		this.duration(30);
+		//this.duration(30);
 		return u;
 	},
 	duration: function(s) {
@@ -137,17 +134,16 @@ uiTimecircle.prototype = {
 			ttl = end - bgn,
 			rv = (now - bgn)/ttl;
 		
-		console.log('now', now);
-		console.log('bgn', bgn);
-		console.log('end', end);
-		console.log(ttl, rv);
+		//console.log('now', now);
+		//console.log('bgn', bgn);
+		//console.log('end', end);
+		//console.log(ttl, rv);
 		
 		this._bgn = bgn;
 		this._end = end;
 		this._duration = Math.round(ttl/1000);
 		//this.valueRel(rv);
 		this.valueAbs(now);
-		
 	},
 	valueAbs: function(t) {
 		var t = new Date(t),
@@ -160,7 +156,9 @@ uiTimecircle.prototype = {
 		//var v = .5; 
 		//this._duration = 12;
 		var v = parseFloat(v),
+			nv = 1 - v,
 			tt = this._duration,
+			rr = Math.floor(nv*this._duration),
 			lt = 0, rt = 0, // time
 			dr = 0, dl = 0; // angle
 		
@@ -172,7 +170,7 @@ uiTimecircle.prototype = {
 		else {
 			lt = tt - tt*v;
 			dr = 180;
-			dl = 360 * (1-v);
+			dl = 360 * nv;
 		}
 
 		lt = Math.round(lt*100)/100;rt = Math.round(rt*100)/100;
@@ -183,10 +181,18 @@ uiTimecircle.prototype = {
 		this._sr.style.animationDuration = rt+'s';
 		this._sl.style.animationDuration = lt+'s';
 		this._sl.style.animationDelay = rt+'s';
-		//this._sl.style.animationPlayState = this._sr.style.animationPlayState = 'running';
-		
+		this.running(rr);
 		console.log(tt,v,rt, lt+'|'+rt, dl+'|'+dr);
 
+	},
+	running: function(t) {
+		if(this._timer) clearInterval(this._timer);
+		this.txt.innerText = t;
+
+		var cbk = this.onTime.bind(this);this.onTime(t);
+		this._timer = setInterval(function(){cbk(--t)},1000);
+
+		this._sl.style.animationPlayState = this._sr.style.animationPlayState = 'running';
 	},
 	sec2time: function(sec) {
 		var time='', s=sec, m, h;
